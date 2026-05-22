@@ -27,6 +27,32 @@ const getAllEvents = async (req, res) => {
       }
 };
 
+const getApprovedEvents = async (req, res) => {
+      try {
+            const events = await Event.find({
+                  status: "Approved"
+            }).sort({ eventDate: 1 });
+            res.json(events);
+      }
+      catch (error) {
+            console.error("Error fetching approved events:", error);
+            res.status(500).json({ message: "Server error while fetching approved events" });
+      }
+};
+
+const getPendingEvents = async (req, res) => {
+      try {
+            const events = await Event.find({
+                  status: "Pending"
+            }).sort({ eventDate: 1 });
+            res.json(events);
+      }
+      catch (error) {
+            console.error("Error fetching pending events:", error);
+            res.status(500).json({ message: "Server error while fetching pending events" });
+      }
+};
+
 const createEvent = async (req, res) => {
       try {
             const newEvent = new Event(req.body);
@@ -63,6 +89,29 @@ const updateEvent = async (req, res) => {
       }
 };
 
+const approveEvent = async (req, res) => {
+      try {
+            const approvedEvent = await Event.findByIdAndUpdate(
+                  req.params.id,
+                  { status: "Approved" },
+                  { new: true }
+            );
+            if (!approvedEvent) {
+                  return res.status(404).json({
+                        message: "Event not found!"
+                  });
+            }
+            res.json({
+                  message: "Event approved successfully!",
+                  event: approvedEvent
+            });
+      }
+      catch (error) {
+            console.error("Error approving event!", error);
+            res.status(500).json({ message: "Server error while approving event!" });
+      }
+}
+
 const deleteEvent = async (req, res) => {
       try {
             const deletedEvent = await Event.findByIdAndDelete(req.params.id);
@@ -83,7 +132,10 @@ const deleteEvent = async (req, res) => {
 
 module.exports = {
       getAllEvents,
+      getApprovedEvents,
+      getPendingEvents,
       createEvent,
       updateEvent,
+      approveEvent,
       deleteEvent
 };

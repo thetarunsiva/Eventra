@@ -25,10 +25,14 @@ const processEmails = async () => {
                   title: parsedEvent.title,
                   eventDate: parsedEvent.eventDate,
             });
-            if (existingEvent || confidenceData.status === "Rejected"){
+            if (existingEvent) {
+                  console.log(`Event titled "${parsedEvent.title}"already exists`);
                   continue;
             }
-            
+            if (confidenceData.status === "Rejected") {
+                  console.log(`Event titled "${parsedEvent.title}" is rejected due to poor confidence score below 40`);
+                  continue;
+            }
             const newEvent = new Event({
                   title: parsedEvent.title,
                   description: parsedEvent.description,
