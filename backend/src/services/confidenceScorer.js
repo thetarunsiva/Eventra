@@ -33,7 +33,7 @@ const calculateConfidenceScore = (email, parsedEvent) => {
       score = Math.min(score, 100);
       score = Math.max(score, 0);
       
-      if (score >= 90) {
+      if (score >= 85) {
             status = "Approved";
       }
       else if (score >= 40) {
