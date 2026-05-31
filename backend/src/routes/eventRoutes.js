@@ -1,14 +1,17 @@
 const express = require('express');
 const router = express.Router();
+const authMiddleware  = require('../middleware/authMiddleware');
+const adminMiddleware = require('../middleware/adminMiddleware');
 
-const { getAllEvents, getApprovedEvents, getPendingEvents, createEvent, updateEvent, approveEvent, deleteEvent } = require('../controllers/eventController');
+const { getAllEvents, getApprovedEvents, getPendingEvents, getEventById, createEvent, updateEvent, approveEvent, deleteEvent } = require('../controllers/eventController');
 
-router.get('/', getAllEvents);
-router.get('/approved', getApprovedEvents);
-router.get('/pending', getPendingEvents);
-router.post('/', createEvent);
-router.put('/:id', updateEvent);
-router.patch('/:id/approve', approveEvent);
-router.delete('/:id', deleteEvent);
+router.get('/', authMiddleware, adminMiddleware, getAllEvents);
+router.get('/approved', authMiddleware, getApprovedEvents);
+router.get('/pending', authMiddleware, adminMiddleware, getPendingEvents);
+router.get('/:id', authMiddleware, getEventById);
+router.post('/', authMiddleware, adminMiddleware, createEvent);
+router.put('/:id', authMiddleware, adminMiddleware, updateEvent);
+router.patch('/:id/approve', authMiddleware, adminMiddleware, approveEvent);
+router.delete('/:id', authMiddleware, adminMiddleware, deleteEvent);
 
 module.exports = router;

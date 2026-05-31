@@ -1,5 +1,21 @@
 const Event = require('../models/Event');
 
+const getEventById = async (req, res) => {
+      try {
+            const event = await Event.findById(req.params.id);
+            if (!event) {
+                  return res.status(404).json({ 
+                        message: "Event not found" 
+                  });
+            }
+            res.json(event);
+      }
+      catch (error) {
+            console.error("Error fetching event by ID:", error);
+            res.status(500).json({ message: "Server error while fetching event" });
+      }
+}; 
+
 const getAllEvents = async (req, res) => {
       try {
             const filter = {};
@@ -29,9 +45,24 @@ const getAllEvents = async (req, res) => {
 
 const getApprovedEvents = async (req, res) => {
       try {
-            const events = await Event.find({
-                  status: "Approved"
-            }).sort({ eventDate: 1 });
+            const filter = { status: "Approved" };
+            if (req.query.search) {
+                  filter.$or = [
+                        {
+                              title: {
+                                    $regex: req.query.search,
+                                    $options: 'i',
+                              },
+                        },
+                        {
+                              description: {
+                                    $regex: req.query.search,
+                                    $options: 'i',
+                              },  
+                        },
+                  ];
+            }
+            const events = await Event.find(filter).sort({ eventDate: 1 });
             res.json(events);
       }
       catch (error) {
@@ -131,6 +162,7 @@ const deleteEvent = async (req, res) => {
 
 
 module.exports = {
+      getEventById,
       getAllEvents,
       getApprovedEvents,
       getPendingEvents,
