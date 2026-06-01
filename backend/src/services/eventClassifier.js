@@ -110,8 +110,6 @@ const classifyEventEmail = (email) => {
       if (!email.subject || email.subject.trim() === "") {
             score -= 20;
       }
-
-      console.log(`Email from: ${email.from} with subject: "${email.subject}" has a raw score of: ${score}`);
       const hasStrongPositiveSignal =
             content.includes("hackathon") ||
             content.includes("workshop") ||
@@ -121,6 +119,7 @@ const classifyEventEmail = (email) => {
             content.includes("register now");
       score = Math.max(score, 0);
       score = Math.min(score, 100);
+      console.log(`Email from: ${email.from} with subject: "${email.subject}" has a raw score of: ${score}`);
       return {
             isEvent: (score >= 30 || (hasStrongPositiveSignal && score >= 15)),
             score,

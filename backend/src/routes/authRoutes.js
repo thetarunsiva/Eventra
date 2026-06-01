@@ -32,6 +32,7 @@ router.get(
                   }
             );
 
+            /* This was for testing purpose during backend dev..
             res.json({
                   success: true,
                   token: token,
@@ -44,6 +45,10 @@ router.get(
                         role: req.user.role,
                   },
             });
+            */
+
+           const frontendUrl = `http://localhost:5173/auth-success?token=${token}`;
+           res.redirect(frontendUrl);
       }
 );
 
