@@ -43,13 +43,11 @@ const processEmails = async () => {
                               ),
                         };
                   }
-                  console.log("Regex Extraction:", regexEvent);
-                  console.log("Gemini Extraction:", genAIEvent);
                   console.log("Merged Extraction:", parsedEvent);
             }
 
             // Check if same event already exits in the server
-            if (!parsedEvent.title || !parsedEvent.eventDate) {
+            if (!parsedEvent.title) {
                   console.log(`Event from email titled "${email.subject}" is rejected due to missing critical fields even after GenAI fallback`);
                   continue;
             }
@@ -72,10 +70,15 @@ const processEmails = async () => {
                   console.log(`Event titled "${parsedEvent.title}" is rejected due to poor confidence score below 40`);
                   continue;
             }
+            if (!confidenceData.isTrustedSender) {
+                  console.log(`Event titled "${parsedEvent.title}" is from untrusted sender: ${email.from}`);
+                  confidenceData.status = "Pending";
+            }
 
             const newEvent = new Event({
                   title: parsedEvent.title,
                   description: parsedEvent.description,
+                  fullEmailBody: parsedEvent.fullEmailBody,
                   club: parsedEvent.club,
                   eventDate: parsedEvent.eventDate,
                   eventTime: parsedEvent.eventTime,

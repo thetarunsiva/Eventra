@@ -22,6 +22,11 @@ const eventSchema = new mongoose.Schema(
                   required: true,
                   trim: true,
             },
+            fullEmailBody: {
+                  type: String,
+                  default: "",
+                  trim: true,
+            },
             location: {
                   type: String,
                   default: "",

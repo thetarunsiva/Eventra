@@ -3,6 +3,7 @@ const parseEventFromEmail = (emailContent) => {
       const eventData = {
             title: "",
             description: emailContent,
+            fullEmailBody: emailContent, 
             club: "",
             eventDate: "",
             registrationDeadline: "",
@@ -88,9 +89,8 @@ const parseEventFromEmail = (emailContent) => {
                   eventData.location = "Online";
             }
       }
-
       const timeMatch = emailContent.match(
-            /\d{1,2}:\d{2}\s?(AM|PM)/i
+      /(?:Time|Event Time):\s*(.+)/i
       );
       if (timeMatch) {
             eventData.eventTime = timeMatch[0];

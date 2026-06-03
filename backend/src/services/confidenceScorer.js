@@ -1,6 +1,9 @@
 const calculateConfidenceScore = (email, parsedEvent) => {
       let score = 0;
 
+      const senderEmail = email.from.match(/<(.+?)>/)?.[1] || email.from.toLowerCase();
+      const isTrustedSender = senderEmail.endsWith("@ssn.edu.in");
+
       if (parsedEvent.title) {
             score += 20;
       }
@@ -11,7 +14,7 @@ const calculateConfidenceScore = (email, parsedEvent) => {
             score += 20;
       }
       else {
-            score -= 25;
+            score -= 10;
       }
       if (parsedEvent.eventTime) {
             score += 10;
@@ -28,6 +31,9 @@ const calculateConfidenceScore = (email, parsedEvent) => {
       if (parsedEvent.tags && parsedEvent.tags.length > 0){
             score += 5;
       }
+      if (isTrustedSender) {
+            score += 20;
+      }
 
       let status = "Rejected";
       score = Math.min(score, 100);
@@ -43,6 +49,7 @@ const calculateConfidenceScore = (email, parsedEvent) => {
       return {
             score,
             status,
+            isTrustedSender,
       };
 };
 

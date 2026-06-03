@@ -23,7 +23,7 @@ io.on("connection", (socket) => {
 });
 
 connectDB();
-startEmailCron();
+// startEmailCron();
 
 server.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);

@@ -20,6 +20,7 @@ const extractEventWithGenAI = async (emailContent) => {
 
             RULES:
             - Extract only information explicitly present in the email.
+            - Analyse the full email body and Return a concise summary between 60 and 150 words, its significance, and any unique details into the description field.
             - Do NOT hallucinate missing fields.
             - If a field is unavailable, return null.
             - Ignore email signatures, disclaimers, unsubscribe text, and reply chains.
@@ -29,6 +30,7 @@ const extractEventWithGenAI = async (emailContent) => {
             - Ignore internships, login alerts, circulars, newsletters, OTPs, office bearer elections, and administrative announcements.
             - Normalize dates to YYYY-MM-DD format whenever possible.
             - Normalize times into readable standard format like 5:00 PM.
+            - For tags, only include relevant keywords like "Hackathon", "Workshop", "AI", "Web Dev" etc. if they are explicitly mentioned in the email content, And also make it capitalized like "Web Dev", "Webinar" instead of Lowercase.
 
             FORMAT:
             Return ONLY valid raw JSON.
