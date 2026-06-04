@@ -21,6 +21,7 @@ function Dashboard() {
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [searchTerm, setSearchTerm] = useState("");
       const [currentDate, setCurrentDate] = useState(new Date());
+
       useEffect(() => {
             const fetchApprovedEvents = async () => {
                   try {
@@ -102,15 +103,21 @@ function Dashboard() {
       }
 
       const sortedEvents = [...events].sort((a, b) => {
-            if (!a.eventDate) return 1;
-            if (!b.eventDate) return -1;
-            return new Date(a.eventDate) - new Date(b.eventDate);
+            const dateA = a.registrationDeadline || a.eventDate || null;
+            const dateB = b.registrationDeadline || b.eventDate || null;
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1; // A has no date → push A to end
+            if (!dateB) return -1; // B has no date → push B to end
+            return new Date(dateA) - new Date(dateB);
       });
 
       const sortedPendingEvents = [...pendingEvents].sort((a, b) => {
-            if (!a.eventDate) return 1;
-            if (!b.eventDate) return -1;
-            return new Date(a.eventDate) - new Date(b.eventDate);
+            const dateA = a.registrationDeadline || a.eventDate || null;
+            const dateB = b.registrationDeadline || b.eventDate || null;
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1; // A has no date → push A to end
+            if (!dateB) return -1; // B has no date → push B to end
+            return new Date(dateA) - new Date(dateB);
       });
 
       const filteredEvents = sortedEvents.filter((event) => {
@@ -202,10 +209,9 @@ function Dashboard() {
                                                       href={event.registrationLink}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
+                                                      onClick={(e) => e.stopPropagate()} // HOW DO I STOP THIS LINK FROM TRIGGERING THE EVENT CLICK WHICH OPENS THE MODAL, ANY SOLUTION?
                                                 >
-                                                      <button>
-                                                            Register here
-                                                      </button>
+                                                      Register here
                                                 </a>
                                           )
                                     }
@@ -213,6 +219,7 @@ function Dashboard() {
                               </div>
                         );
                   })}
+                  <hr />
                   <h2>
                         Pending Events: {pendingEvents.length}
                   </h2>

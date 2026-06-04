@@ -2,7 +2,7 @@ const cron = require('node-cron');
 const { processEmails } = require('../services/emailProcessorService');
 
 const startEmailCron = () => {
-      cron.schedule('*/30 * * * *', async () => {
+      cron.schedule('0 9,21 * * *', async () => {
             console.log('Running email processing cron job every 10 minutes..');
             try {
                   await processEmails();

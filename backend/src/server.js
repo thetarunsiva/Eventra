@@ -3,6 +3,7 @@ require("dotenv").config();
 const app = require("./app");
 const connectDB = require("./config/db");
 const { startEmailCron } = require("./cron/emailCron");
+const { processEmails } = require("./services/emailProcessorService");
 const port = process.env.PORT || 5000;
 
 const http = require("http");
@@ -23,7 +24,10 @@ io.on("connection", (socket) => {
 });
 
 connectDB();
-// startEmailCron();
+startEmailCron();
+
+// processEmails();
+// console.log("Email ingestion completed successfully");
 
 server.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);

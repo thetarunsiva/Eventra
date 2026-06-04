@@ -61,6 +61,8 @@ function AdminDashboard() {
       }
 
       const removeEvent = async (eventId) => {
+            const confirmed = window.confirm("Are you sure you want to reject this event? This action cannot be undone!");
+            if (!confirmed) return;
             try {
                   const token = localStorage.getItem("token");
                   await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
@@ -101,9 +103,12 @@ function AdminDashboard() {
       }
 
       const sortedEvents = [...events].sort((a, b) => {
-            if (!a.eventDate) return 1;
-            if (!b.eventDate) return -1;
-            return new Date(a.eventDate) - new Date(b.eventDate);
+            const dateA = a.registrationDeadline || a.eventDate || null;
+            const dateB = b.registrationDeadline || b.eventDate || null;
+            if (!dateA && !dateB) return 0;
+            if (!dateA) return 1; // A has no date → push A to end
+            if (!dateB) return -1; // B has no date → push B to end
+            return new Date(dateA) - new Date(dateB);
       });
 
       return (
@@ -148,10 +153,14 @@ function AdminDashboard() {
                                     </p>
                                     <p>
                                           <strong>Registration Link: </strong>
-                                          {displayValue(event.registrationLink)}
+                                          { event.registrationLink ? (
+                                                <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                                                      {event.registrationLink}
+                                                </a>
+                                          ) : "N/A" }
                                     </p>
-                                    <button onClick={() => approveEvent(event._id)}> Approve </button>
-                                    <button onClick={() => removeEvent(event._id)}> Reject </button>
+                                    <button onClick={(e) => { e.stopPropagation(); approveEvent(event._id) }}> Approve </button>
+                                    <button onClick={(e) => { e.stopPropagation(); removeEvent(event._id) }}> Reject </button>
                                     <hr />
                               </div>
                         );
@@ -211,6 +220,12 @@ function AdminDashboard() {
                                                 <pre>
                                                       {cleanDescription(selectedEvent.fullEmailBody)}
                                                 </pre>
+                                                <button onClick={() => { approveEvent(selectedEvent._id); setSelectedEvent(null); }}>
+                                                      Approve
+                                                </button>
+                                                <button onClick={() => { removeEvent(selectedEvent._id); setSelectedEvent(null); }}>
+                                                      Reject
+                                                </button>
                                                 <hr />
                                           </div>
                                     </div>

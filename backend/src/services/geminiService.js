@@ -27,6 +27,8 @@ const extractEventWithGenAI = async (emailContent) => {
             - Prefer the main event title instead of generic subjects like "Reminder".
             - Normalize dates/times if possible.
             - Only classify genuine student-facing events.
+            - If registration links are present, ensure the field is preceded by proper "http://" and is a valid URL format
+            - If you find and analyse the event is an Online event, Dont replace the location field with YouTube live links, instead use relevant names, the location field should be "Online / YouTube / GMeet"
             - Ignore internships, login alerts, circulars, newsletters, OTPs, office bearer elections, and administrative announcements.
             - Normalize dates to YYYY-MM-DD format whenever possible.
             - Normalize times into readable standard format like 5:00 PM.
