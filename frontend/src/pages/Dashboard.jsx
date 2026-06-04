@@ -2,11 +2,24 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import { Calendar, dateFnsLocalizer } from "react-big-calendar";
+import "react-big-calendar/lib/css/react-big-calendar.css";
+import { format, parse, startOfWeek, getDay } from "date-fns";
+
+const localizer = dateFnsLocalizer({
+      format,
+      parse,
+      startOfWeek,
+      getDay,
+      locales: {}
+});
+
 function Dashboard() {
       const navigate = useNavigate();
       const [events, setEvents] = useState([]);
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [searchTerm, setSearchTerm] = useState("");
+      const [selectedDate, setSelectedDate] = useState(null);
       useEffect(() => {
             const fetchApprovedEvents = async () => {
                   try {
@@ -72,6 +85,15 @@ function Dashboard() {
             );
       });
 
+      const calendarEvents = sortedEvents
+            .filter(event => event.eventDate)
+            .map(event => ({
+                  title: event.title,
+                  start: new Date(event.eventDate),
+                  end: new Date(event.eventDate),
+                  resource: event,
+            }));
+
       return (
             <div>
                   <h1>Dashboard Page</h1>
@@ -86,6 +108,18 @@ function Dashboard() {
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
                   />
+                  <h2> Calendar view </h2>
+                  <div style={{ height: "600px", marginBottom: "40px" }}>
+                        <Calendar
+                              localizer={localizer}
+                              events={calendarEvents}
+                              startAccessor="start"
+                              endAccessor="end"
+                              views={["month", "week"]}
+                              selectable
+                        />
+                  </div>
+                  <hr />
                   {filteredEvents.map((event) => {
                         return (
                               <div key={event._id} onClick={() => setSelectedEvent(event)} style={{cursor: "pointer"}}>
