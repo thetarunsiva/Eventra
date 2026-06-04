@@ -11,7 +11,7 @@ const localizer = dateFnsLocalizer({
       parse,
       startOfWeek,
       getDay,
-      locales: {}
+      locales: {},
 });
 
 function Dashboard() {
@@ -20,6 +20,7 @@ function Dashboard() {
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [searchTerm, setSearchTerm] = useState("");
       const [selectedDate, setSelectedDate] = useState(null);
+      const [currentDate, setCurrentDate] = useState(new Date());
       useEffect(() => {
             const fetchApprovedEvents = async () => {
                   try {
@@ -39,6 +40,18 @@ function Dashboard() {
             }
             fetchApprovedEvents();
       }, []);
+
+      useEffect(() => {
+            if (selectedEvent) {
+                  document.body.style.overflow = "hidden";
+            }
+            else {
+                  document.body.style.overflow = "auto";
+            }
+            return () => {
+                  document.body.style.overflow = "auto";
+            };
+      }, [selectedEvent]);
 
       const handleLogout = () => {
             localStorage.removeItem("token");
@@ -113,10 +126,15 @@ function Dashboard() {
                         <Calendar
                               localizer={localizer}
                               events={calendarEvents}
+                              date={currentDate}
                               startAccessor="start"
                               endAccessor="end"
-                              views={["month", "week"]}
+                              views={["month"]}
                               selectable
+                              onNavigate={(date) => setCurrentDate(date)}
+                              onSelectEvent={(calendarEvent) => 
+                                    setSelectedEvent(calendarEvent.resource)
+                              }
                         />
                   </div>
                   <hr />
@@ -171,20 +189,62 @@ function Dashboard() {
                   })}
                   {
                         selectedEvent && (
-                              <div>
-                                    <h2>{selectedEvent.title}</h2>
-                                    <h3>AI Summary</h3>
-                                    <p>
-                                          {cleanDescription(selectedEvent.description)}
-                                    </p>
-                                    <h3>Original Email</h3>
-                                    <pre>
-                                          {cleanDescription(selectedEvent.fullEmailBody)}
-                                    </pre>
-                                    <button onClick={() => setSelectedEvent(null)}>
-                                          Close
-                                    </button>
-                                    <hr />
+                              <div 
+                                    onClick={() => setSelectedEvent(null)}
+                                    style={{
+                                          position: "fixed",
+                                          top: 0,
+                                          left: 0,
+                                          width: "100%",
+                                          height: "100%",
+                                          backgroundColor: "rgba(0,0,0,0.5)",
+                                          display: "flex",
+                                          justifyContent: "center",
+                                          alignItems: "center",
+                                          zIndex: 9999,
+                                    }}
+                              >
+                                    <div 
+                                          onClick={(e) => e.stopPropagation()}
+                                          style={{
+                                                backgroundColor: "white",
+                                                paddingBottom: "20px",
+                                                width: "80%",
+                                                maxWidth: "1000px",
+                                                maxHeight: "90vh",
+                                                overflowY: "auto",
+                                                borderRadius: "10px",
+                                          }}
+                                    >
+                                          <div 
+                                                style={{
+                                                      display: "flex",
+                                                      justifyContent: "space-between",
+                                                      alignItems: "center",
+                                                      position: "sticky",
+                                                      top: 0,
+                                                      backgroundColor: "white",
+                                                      padding: "5px 20px",
+                                                      borderBottom: "1px solid #ddd",
+                                                }}
+                                          >
+                                                <h2>{selectedEvent.title}</h2>
+                                                <button onClick={() => setSelectedEvent(null)}>
+                                                      X
+                                                </button>
+                                          </div>
+                                          <div style={{ padding: "20px" }}>
+                                                <h3>AI Summary</h3>
+                                                <p>
+                                                      {cleanDescription(selectedEvent.description)}
+                                                </p>
+                                                <h3>Original Email</h3>
+                                                <pre>
+                                                      {cleanDescription(selectedEvent.fullEmailBody)}
+                                                </pre>
+                                                <hr />
+                                          </div>
+                                    </div>
                               </div>
                         )
                   }
