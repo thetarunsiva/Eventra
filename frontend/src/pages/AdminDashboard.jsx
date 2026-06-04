@@ -154,7 +154,12 @@ function AdminDashboard() {
                                     <p>
                                           <strong>Registration Link: </strong>
                                           { event.registrationLink ? (
-                                                <a href={event.registrationLink} target="_blank" rel="noopener noreferrer">
+                                                <a 
+                                                      href={event.registrationLink} 
+                                                      target="_blank" 
+                                                      rel="noopener noreferrer"
+                                                      onClick={(e) => e.stopPropagation()}
+                                                >
                                                       {event.registrationLink}
                                                 </a>
                                           ) : "N/A" }

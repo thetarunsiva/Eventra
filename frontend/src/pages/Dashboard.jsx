@@ -209,7 +209,7 @@ function Dashboard() {
                                                       href={event.registrationLink}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
-                                                      onClick={(e) => e.stopPropagate()} // HOW DO I STOP THIS LINK FROM TRIGGERING THE EVENT CLICK WHICH OPENS THE MODAL, ANY SOLUTION?
+                                                      onClick={(e) => e.stopPropagation()} 
                                                 >
                                                       Register here
                                                 </a>
@@ -264,6 +264,7 @@ function Dashboard() {
                                                       href={event.registrationLink}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
+                                                      onClick={(e) => e.stopPropagation()}
                                                 >
                                                       <button>
                                                             Register here
