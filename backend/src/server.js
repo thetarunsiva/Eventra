@@ -26,8 +26,8 @@ io.on("connection", (socket) => {
 connectDB();
 startEmailCron();
 
-// processEmails();
-// console.log("Email ingestion completed successfully");
+processEmails();
+console.log("Email ingestion completed successfully");
 
 server.listen(port, () => {
       console.log(`Server is running on http://localhost:${port}`);

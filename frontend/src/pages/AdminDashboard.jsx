@@ -10,7 +10,7 @@ function AdminDashboard() {
             const fetchPendingEvents = async () => {
                   try {
                         const token = localStorage.getItem("token");
-                        const response = await axios.get("http://localhost:5000/api/events/pending",
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending`, 
                               {
                                     headers: {
                                           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function AdminDashboard() {
       const approveEvent = async (eventId) => {
             try {
                   const token = localStorage.getItem("token");
-                  await axios.patch(`http://localhost:5000/api/events/${eventId}/approve`, {}, {
+                  await axios.patch(`${import.meta.env.VITE_API_URL}/events/${eventId}/approve`, {}, {
                         headers: {
                               Authorization: `Bearer ${token}`,
                         }
@@ -65,7 +65,7 @@ function AdminDashboard() {
             if (!confirmed) return;
             try {
                   const token = localStorage.getItem("token");
-                  await axios.delete(`http://localhost:5000/api/events/${eventId}`, {
+                  await axios.delete(`${import.meta.env.VITE_API_URL}/events/${eventId}`, {
                         headers: {
                               Authorization: `Bearer ${token}`,
                         }

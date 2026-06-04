@@ -26,7 +26,7 @@ function Dashboard() {
             const fetchApprovedEvents = async () => {
                   try {
                         const token = localStorage.getItem("token");
-                        const response = await axios.get("http://localhost:5000/api/events/approved",
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/approved`,
                               {
                                     headers: {
                                           Authorization: `Bearer ${token}`,
@@ -46,7 +46,7 @@ function Dashboard() {
             const fetchPendingEvents = async () => {
                   try {
                         const token = localStorage.getItem("token");
-                        const response = await axios.get("http://localhost:5000/api/events/pending",
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending`,
                               {
                                     headers: {
                                           Authorization: `Bearer ${token}`,

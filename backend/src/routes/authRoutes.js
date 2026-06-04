@@ -47,7 +47,7 @@ router.get(
             });
             */
 
-           const frontendUrl = `http://localhost:5173/auth-success?token=${token}`;
+           const frontendUrl = `${process.env.FRONTEND_URL}/auth-success?token=${token}`;
            res.redirect(frontendUrl);
       }
 );
