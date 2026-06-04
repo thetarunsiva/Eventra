@@ -17,9 +17,9 @@ const localizer = dateFnsLocalizer({
 function Dashboard() {
       const navigate = useNavigate();
       const [events, setEvents] = useState([]);
+      const [pendingEvents, setPendingEvents] = useState([]);
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [searchTerm, setSearchTerm] = useState("");
-      const [selectedDate, setSelectedDate] = useState(null);
       const [currentDate, setCurrentDate] = useState(new Date());
       useEffect(() => {
             const fetchApprovedEvents = async () => {
@@ -39,6 +39,26 @@ function Dashboard() {
                   }
             }
             fetchApprovedEvents();
+      }, []);
+
+      useEffect(() => {
+            const fetchPendingEvents = async () => {
+                  try {
+                        const token = localStorage.getItem("token");
+                        const response = await axios.get("http://localhost:5000/api/events/pending",
+                              {
+                                    headers: {
+                                          Authorization: `Bearer ${token}`,
+                                    },
+                              }
+                        );
+                        setPendingEvents(response.data);
+                  }
+                  catch (error) {
+                        console.error("Error fetching pending events:", error);
+                  }
+            }
+            fetchPendingEvents();
       }, []);
 
       useEffect(() => {
@@ -82,6 +102,12 @@ function Dashboard() {
       }
 
       const sortedEvents = [...events].sort((a, b) => {
+            if (!a.eventDate) return 1;
+            if (!b.eventDate) return -1;
+            return new Date(a.eventDate) - new Date(b.eventDate);
+      });
+
+      const sortedPendingEvents = [...pendingEvents].sort((a, b) => {
             if (!a.eventDate) return 1;
             if (!b.eventDate) return -1;
             return new Date(a.eventDate) - new Date(b.eventDate);
@@ -187,6 +213,61 @@ function Dashboard() {
                               </div>
                         );
                   })}
+                  <h2>
+                        Pending Events: {pendingEvents.length}
+                  </h2>
+                  {sortedPendingEvents.map((event) => {
+                        return (
+                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{cursor: "pointer"}}>
+                                    <h2>{event.title}</h2>
+                                    <div style={{ border: "1px solid orange", padding: "8px 12px", borderRadius: "6px", marginBottom: "12px" }}>
+                                          <h4 style={{ margin: 0 }}>⚠️ This event is <strong>PENDING Approval</strong> and may be subject to changes</h4>
+                                    </div>
+                                    <p>
+                                          <strong>Date: </strong>
+                                          {formatDate(event.eventDate)}
+                                    </p>
+                                    <p>
+                                          <strong>Time: </strong>
+                                          {displayValue(event.eventTime)}
+                                    </p>
+                                    <p>
+                                          <strong>Location: </strong>
+                                          {displayValue(event.location)}
+                                    </p>
+                                    <p>
+                                          <strong>Club: </strong>
+                                          {displayValue(event.club)}
+                                    </p>
+                                    <p>
+                                          <strong>Registration Deadline: </strong>
+                                          {formatDate(event.registrationDeadline)}
+                                    </p>
+                                    <div>
+                                          <strong>Tags:</strong>{" "}
+                                          {event.tags?.join(" | ") || "N/A"}
+                                    </div>
+                                    <p>
+                                          {cleanDescription(event.description).slice(0, 360)}
+                                          ...
+                                    </p>
+                                    {
+                                          event.registrationLink && (
+                                                <a 
+                                                      href={event.registrationLink}
+                                                      target="_blank"
+                                                      rel="noopener noreferrer"
+                                                >
+                                                      <button>
+                                                            Register here
+                                                      </button>
+                                                </a>
+                                          )
+                                    }
+                                    <hr />
+                              </div>
+                        );
+                  })}
                   {
                         selectedEvent && (
                               <div 
@@ -234,6 +315,11 @@ function Dashboard() {
                                                 </button>
                                           </div>
                                           <div style={{ padding: "20px" }}>
+                                                {selectedEvent.status === "Pending" && (
+                                                      <div style={{ border: "1px solid orange", padding: "8px 12px", borderRadius: "6px", marginBottom: "12px" }}>
+                                                            <h4 style={{ margin: 0 }}>⚠️ This event is <strong>PENDING Approval</strong> and may be subject to changes</h4>
+                                                      </div>
+                                                )}
                                                 <h3>AI Summary</h3>
                                                 <p>
                                                       {cleanDescription(selectedEvent.description)}

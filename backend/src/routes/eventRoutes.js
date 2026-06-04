@@ -7,7 +7,7 @@ const { getAllEvents, getApprovedEvents, getPendingEvents, getEventById, createE
 
 router.get('/', authMiddleware, adminMiddleware, getAllEvents);
 router.get('/approved', authMiddleware, getApprovedEvents);
-router.get('/pending', authMiddleware, adminMiddleware, getPendingEvents);
+router.get('/pending', authMiddleware, getPendingEvents);
 router.get('/:id', authMiddleware, getEventById);
 router.post('/', authMiddleware, adminMiddleware, createEvent);
 router.put('/:id', authMiddleware, adminMiddleware, updateEvent);

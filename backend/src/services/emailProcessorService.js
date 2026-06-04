@@ -14,6 +14,15 @@ const needGenAI = (parsedEvent) => {
       );
 };
 
+const isSimilarTitle = (title1, title2) => {
+      const normalize = (str) => str.toLowerCase().replace(/[^a-z0-9\s]/g, "").trim().split(/\s+/);
+      const words1 = normalize(title1);
+      const words2 = normalize(title2);
+      const commonWords = words1.filter(word => words2.includes(word));
+      const similarity = commonWords.length / Math.max(words1.length, words2.length);
+      return similarity >= 0.7;
+}
+
 const processEmails = async () => {
       const emails = await fetchLatestEmails();
       const processedEvents = [];
@@ -51,14 +60,24 @@ const processEmails = async () => {
                   console.log(`Event from email titled "${email.subject}" is rejected due to missing critical fields even after GenAI fallback`);
                   continue;
             }
-            const existingEvent = await Event.findOne({
-                  title: parsedEvent.title,
-                  eventDate: parsedEvent.eventDate,
-            });
-            if (existingEvent) {
-                  console.log(`Event titled "${parsedEvent.title}" already exists`);
-                  continue;
+            
+            // Check if same event already exists..
+            if (parsedEvent.eventDate) {
+                  const existingEvents = await Event.find({ eventDate: parsedEvent.eventDate });
+                  const isDuplicate = existingEvents.some(existing => isSimilarTitle(existing.title, parsedEvent.title));
+                  if (isDuplicate) {
+                        console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
+                        continue;
+                  }
             }
+            else {
+                  const existingEvent = await Event.findOne({ title: parsedEvent.title });
+                  if (existingEvent) {
+                        console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
+                        continue;
+                  }
+            }
+
             if (genAIEvent && !genAIEvent.isRealEvent) {
                   console.log(`Event titled "${parsedEvent.title}" is rejected by GenAI as it is not a real event`);
                   continue;
