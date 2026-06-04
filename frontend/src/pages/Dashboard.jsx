@@ -1,9 +1,12 @@
 import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function Dashboard() {
+      const navigate = useNavigate();
       const [events, setEvents] = useState([]);
       const [selectedEvent, setSelectedEvent] = useState(null);
+      const [searchTerm, setSearchTerm] = useState("");
       useEffect(() => {
             const fetchApprovedEvents = async () => {
                   try {
@@ -23,6 +26,11 @@ function Dashboard() {
             }
             fetchApprovedEvents();
       }, []);
+
+      const handleLogout = () => {
+            localStorage.removeItem("token");
+            navigate("/");
+      }
 
       const formatDate = (date) => {
             if (!date) return "N/A";
@@ -53,13 +61,32 @@ function Dashboard() {
             return new Date(a.eventDate) - new Date(b.eventDate);
       });
 
+      const filteredEvents = sortedEvents.filter((event) => {
+            const query = searchTerm.toLowerCase();
+            return (
+                  event.title?.toLowerCase().includes(query) ||
+                  event.club?.toLowerCase().includes(query) ||
+                  event.tags?.join(" ").toLowerCase().includes(query) ||
+                  event.description?.toLowerCase().includes(query) ||
+                  event.location?.toLowerCase().includes(query)
+            );
+      });
+
       return (
             <div>
                   <h1>Dashboard Page</h1>
+                  <button onClick={handleLogout}> Logout </button>
+                  <hr />
                   <h2>
-                        Approved Events: {events.length}
+                        Showing {filteredEvents.length} of {events.length} Approved Events
                   </h2>
-                  {sortedEvents.map((event) => {
+                  <input 
+                        type="text"
+                        placeholder="Search by title, club, tags, description or location.."
+                        value={searchTerm}
+                        onChange={(e) => setSearchTerm(e.target.value)}
+                  />
+                  {filteredEvents.map((event) => {
                         return (
                               <div key={event._id} onClick={() => setSelectedEvent(event)} style={{cursor: "pointer"}}>
                                     <h2>{event.title}</h2>
@@ -88,7 +115,7 @@ function Dashboard() {
                                           {event.tags?.join(" | ") || "N/A"}
                                     </div>
                                     <p>
-                                          {cleanDescription(event.description)}
+                                          {cleanDescription(event.description).slice(0, 360)}
                                           ...
                                     </p>
                                     {
