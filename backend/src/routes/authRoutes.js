@@ -13,7 +13,7 @@ router.get(
       passport.authenticate('google', { 
             scope: ['profile', 'email', 'https://www.googleapis.com/auth/gmail.readonly'],
             access_type: 'offline',
-            prompt: 'select_account',
+            prompt: 'consent',
       })
 );
 
