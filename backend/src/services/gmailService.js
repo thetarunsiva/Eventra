@@ -1,25 +1,27 @@
 const { google } = require('googleapis');
 
-const oauth2Client = new google.auth.OAuth2(
-      process.env.GOOGLE_CLIENT_ID,
-      process.env.GOOGLE_CLIENT_SECRET,
-      "https://developers.google.com/oauthplayground"
-);
+const setGmailClient = (refreshToken) => {
+      const oauth2Client = new google.auth.OAuth2(
+            process.env.GOOGLE_CLIENT_ID,
+            process.env.GOOGLE_CLIENT_SECRET,
+      );
+      oauth2Client.setCredentials({
+            refresh_token: refreshToken,
+      });
+      return google.gmail({
+            version: 'v1',
+            auth: oauth2Client,
+      });
+};
 
-oauth2Client.setCredentials({ refresh_token: process.env.GOOGLE_REFRESH_TOKEN });
-
-const gmail = google.gmail({ 
-      version: 'v1', 
-      auth: oauth2Client }
-);
-
-const fetchLatestEmails = async () => {
+const fetchLatestEmails = async (refreshToken) => {
+      const gmail = setGmailClient(refreshToken);
       try {
             const res = await gmail.users.messages.list({
                   userId: 'me',
-                  maxResults: 40,
+                  maxResults: 10,
                   labelIds: ['INBOX'],
-                  q: 'newer_than:14d',
+                  q: 'newer_than:10d',
             });
             const messages = res.data.messages || [];
             console.log(`Fetched ${messages.length} emails from Gmail`);
@@ -63,7 +65,8 @@ const extractBodyFromParts = (parts) => {
       return '';
 };
 
-const fetchFullEmailBody = async (messageId) => {
+const fetchFullEmailBody = async (messageId, refreshToken) => {
+      const gmail = setGmailClient(refreshToken);
       try {
             const email = await gmail.users.messages.get({
                   userId: 'me',

@@ -19,6 +19,10 @@ const userSchema = new mongoose.Schema({
       picture: {
             type: String,
             },
+      googleRefreshToken: {
+            type: String,
+            default: null,
+      },
       role: {
             type: String,
             required: true,

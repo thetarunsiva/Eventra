@@ -2,7 +2,10 @@ const Event = require('../models/Event');
 
 const getEventById = async (req, res) => {
       try {
-            const event = await Event.findById(req.params.id);
+            const event = await Event.findOne({
+                  _id: req.params.id,
+                  userId: req.user._id
+            });
             if (!event) {
                   return res.status(404).json({ 
                         message: "Event not found" 
@@ -45,7 +48,7 @@ const getAllEvents = async (req, res) => {
 
 const getApprovedEvents = async (req, res) => {
       try {
-            const filter = { status: "Approved" };
+            const filter = { status: "Approved", userId: req.user._id };
             if (req.query.search) {
                   filter.$or = [
                         {
@@ -74,7 +77,8 @@ const getApprovedEvents = async (req, res) => {
 const getPendingEvents = async (req, res) => {
       try {
             const events = await Event.find({
-                  status: "Pending"
+                  status: "Pending",
+                  userId: req.user._id,
             }).sort({ eventDate: 1 });
             res.json(events);
       }

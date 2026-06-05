@@ -19,7 +19,12 @@ passport.use(
                                     email: profile.emails[0].value,
                                     name: profile.displayName,
                                     picture: profile.photos?.[0]?.value,
+                                    googleRefreshToken: refreshToken,
                               });
+                        }
+                        else if (refreshToken) {
+                              user.googleRefreshToken = refreshToken;
+                              await user.save();
                         }
                         done(null, user);
                   }

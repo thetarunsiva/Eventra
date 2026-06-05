@@ -10,7 +10,11 @@ const adminMiddleware = require("../middleware/adminMiddleware");
 const router = express.Router();
 router.get(
       '/google',
-      passport.authenticate('google', { scope: ['profile', 'email'] })
+      passport.authenticate('google', { 
+            scope: ['profile', 'email', 'https://www.googleapis.com/auth/gmail.readonly'],
+            access_type: 'offline',
+            prompt: 'select_account',
+      })
 );
 
 router.get(
@@ -23,6 +27,7 @@ router.get(
       async (req, res) => {
             const token = jwt.sign(
                   {
+                        _id: req.user._id,
                         userId: req.user._id,
                         role: req.user.role,
                   },
