@@ -11,6 +11,10 @@ passport.use(
                   callbackURL: 'https://eventra-ssn-backend.onrender.com/api/auth/google/callback',
             },
             async (accessToken, refreshToken, profile, done) => {
+                  console.log("=== PASSPORT CALLBACK ===");
+                  console.log("Profile ID:", profile.id);
+                  console.log("Email:", profile.emails[0].value);
+                  console.log("Refresh Token:", refreshToken);
                   try {
                         let user = await User.findOne({ googleId: profile.id });
                         if (!user) {
