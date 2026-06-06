@@ -29,8 +29,8 @@ const processEmails = async () => {
       const processedEvents = [];
       console.log(users);
       for (const user of users) {
+            console.log(`Processing user: ${user.email}`);
             const emails = await fetchLatestEmails(user.googleRefreshToken);
-            const processedEvents = [];
             for (const email of emails) {
                   // Classify email as event or not
                   const classification = classifyEventEmail(email);
@@ -68,7 +68,7 @@ const processEmails = async () => {
                   
                   // Check if same event already exists..
                   if (parsedEvent.eventDate) {
-                        const existingEvents = await Event.find({ eventDate: parsedEvent.eventDate });
+                        const existingEvents = await Event.find({ eventDate: parsedEvent.eventDate, userId: user._id });
                         const isDuplicate = existingEvents.some(existing => isSimilarTitle(existing.title, parsedEvent.title));
                         if (isDuplicate) {
                               console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
@@ -76,7 +76,7 @@ const processEmails = async () => {
                         }
                   }
                   else {
-                        const existingEvent = await Event.findOne({ title: parsedEvent.title });
+                        const existingEvent = await Event.findOne({ title: parsedEvent.title, userId: user._id });
                         if (existingEvent) {
                               console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
                               continue;

@@ -19,9 +19,9 @@ const fetchLatestEmails = async (refreshToken) => {
       try {
             const res = await gmail.users.messages.list({
                   userId: 'me',
-                  maxResults: 10,
+                  maxResults: 50,
                   labelIds: ['INBOX'],
-                  q: 'newer_than:10d',
+                  q: 'newer_than:20d',
             });
             const messages = res.data.messages || [];
             console.log(`Fetched ${messages.length} emails from Gmail`);
