@@ -1,5 +1,6 @@
 const passport = require('passport');
 const GoogleStrategy = require('passport-google-oauth20').Strategy;
+const { processEmails } = require('../services/emailProcessorService');
 
 const User = require('../models/User');
 
@@ -25,6 +26,15 @@ passport.use(
                                     picture: profile.photos?.[0]?.value,
                                     googleRefreshToken: refreshToken,
                               });
+                              setTimeout(async () => {
+                                    try {
+                                          await processEmails();
+                                    }
+                                    catch (error) {
+                                          console.error(`Error processing emails for new user ${user.email}: `, error.message);
+                                    }
+
+                              }, 0);
                         }
                         else if (refreshToken) {
                               user.googleRefreshToken = refreshToken;

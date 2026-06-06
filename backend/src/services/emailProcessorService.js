@@ -1,4 +1,4 @@
-const { fetchLatestEmails, fetchFullEmailBody } = require('./gmailService');
+const { fetchOnboardingEmails, fetchLatestEmails, fetchFullEmailBody } = require('./gmailService');
 const { classifyEventEmail } = require('./eventClassifier');
 const { parseEventFromEmail } = require('./eventParser');
 const { calculateConfidenceScore } = require('./confidenceScorer');
@@ -24,109 +24,129 @@ const isSimilarTitle = (title1, title2) => {
       return similarity >= 0.7;
 }
 
-const processEmails = async () => {
-      const users = await User.find();
+const processEmails = async (userId = null) => {
+      const users = userId ? await User.findById(userId) : await User.find();
       const processedEvents = [];
-      console.log(users);
+      console.log(`${users.length} User(s) found for email processing..`);
       for (const user of users) {
             console.log(`Processing user: ${user.email}`);
-            const emails = await fetchLatestEmails(user.googleRefreshToken);
-            for (const email of emails) {
-                  // Classify email as event or not
-                  const classification = classifyEventEmail(email);
-                  // Skip non-event emails
-                  if (!classification.isEvent) {
-                        continue;
-                  }
-                  // Parse event details from event email
-                  const fullBody = await fetchFullEmailBody(email.id, user.googleRefreshToken);
-                  const regexEvent = parseEventFromEmail(`${email.subject}\n${fullBody}`);
-                  let genAIEvent = null;
-                  let parsedEvent = regexEvent || {};
-
-                  // Calling Gemini API if critical fields are missing..
-                  if (needGenAI(parsedEvent)) {
-                        console.log(`Using GenAI fallback for: ${email.subject}`);
-                        genAIEvent = await extractEventWithGenAI(`${email.subject}\n${fullBody}`);
-                        if (genAIEvent && genAIEvent.isRealEvent) {
-                              parsedEvent = {
-                                    ...parsedEvent,
-                                    ...Object.fromEntries(
-                                          Object.entries(genAIEvent)
-                                          .filter(([_, value]) => value !== null)
-                                    ),
-                              };
-                        }
-                        console.log("Merged Extraction:", parsedEvent);
-                  }
-
-                  // Check if same event already exits in the server
-                  if (!parsedEvent.title) {
-                        console.log(`Event from email titled "${email.subject}" is rejected due to missing critical fields even after GenAI fallback`);
-                        continue;
-                  }
-                  
-                  // Check if same event already exists..
-                  if (parsedEvent.eventDate) {
-                        const existingEvents = await Event.find({ eventDate: parsedEvent.eventDate, userId: user._id });
-                        const isDuplicate = existingEvents.some(existing => isSimilarTitle(existing.title, parsedEvent.title));
-                        if (isDuplicate) {
-                              console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
-                              continue;
-                        }
+            if (!user.googleRefreshToken) {
+                  console.log(`Skipping user ${user.email} as they do not have a Google refresh token..`);
+                  continue;
+            }
+            try {
+                  let emails = [];
+                  if (!user.isOnboarded) {
+                        emails = await fetchOnboardingEmails(user.googleRefreshToken);
                   }
                   else {
-                        const existingEvent = await Event.findOne({ title: parsedEvent.title, userId: user._id });
-                        if (existingEvent) {
-                              console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
+                        emails = await fetchLatestEmails(user.googleRefreshToken, user.lastEmailFetchedAt);
+                  }                  
+                  for (const email of emails) {
+                        // Classify email as event or not
+                        const classification = classifyEventEmail(email);
+                        // Skip non-event emails
+                        if (!classification.isEvent) {
                               continue;
                         }
-                  }
+                        // Parse event details from event email
+                        const fullBody = await fetchFullEmailBody(email.id, user.googleRefreshToken);
+                        const regexEvent = parseEventFromEmail(`${email.subject}\n${fullBody}`);
+                        let genAIEvent = null;
+                        let parsedEvent = regexEvent || {};
 
-                  if (genAIEvent && !genAIEvent.isRealEvent) {
-                        console.log(`Event titled "${parsedEvent.title}" is rejected by GenAI as it is not a real event`);
-                        continue;
-                  }
+                        // Calling Gemini API if critical fields are missing..
+                        if (needGenAI(parsedEvent)) {
+                              console.log(`Using GenAI fallback for: ${email.subject}`);
+                              genAIEvent = await extractEventWithGenAI(`${email.subject}\n${fullBody}`);
+                              if (genAIEvent && genAIEvent.isRealEvent) {
+                                    parsedEvent = {
+                                          ...parsedEvent,
+                                          ...Object.fromEntries(
+                                                Object.entries(genAIEvent)
+                                                .filter(([_, value]) => value !== null)
+                                          ),
+                                    };
+                              }
+                              console.log("Merged Extraction:", parsedEvent);
+                        }
 
-                  // Calculate confidence score for parsed event and decide whether to save it or not
-                  const confidenceData = calculateConfidenceScore(email, parsedEvent);
-                  if (confidenceData.status === "Rejected") {
-                        console.log(`Event titled "${parsedEvent.title}" is rejected due to poor confidence score below 40`);
-                        continue;
-                  }
-                  if (!confidenceData.isTrustedSender) {
-                        console.log(`Event titled "${parsedEvent.title}" is from untrusted sender: ${email.from}`);
-                        confidenceData.status = "Pending";
-                  }
+                        // Check if same event already exits in the server
+                        if (!parsedEvent.title) {
+                              console.log(`Event from email titled "${email.subject}" is rejected due to missing critical fields even after GenAI fallback`);
+                              continue;
+                        }
+                        
+                        // Check if same event already exists..
+                        if (parsedEvent.eventDate) {
+                              const existingEvents = await Event.find({ eventDate: parsedEvent.eventDate, userId: user._id });
+                              const isDuplicate = existingEvents.some(existing => isSimilarTitle(existing.title, parsedEvent.title));
+                              if (isDuplicate) {
+                                    console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
+                                    continue;
+                              }
+                        }
+                        else {
+                              const existingEvent = await Event.findOne({ title: parsedEvent.title, userId: user._id });
+                              if (existingEvent) {
+                                    console.log(`Event titled "${parsedEvent.title}" is rejected as similar event already exists!`);
+                                    continue;
+                              }
+                        }
 
-                  const newEvent = new Event({
-                        title: parsedEvent.title,
-                        description: parsedEvent.description,
-                        fullEmailBody: parsedEvent.fullEmailBody,
-                        club: parsedEvent.club,
-                        eventDate: parsedEvent.eventDate,
-                        eventTime: parsedEvent.eventTime,
-                        registrationDeadline: parsedEvent.registrationDeadline,
-                        registrationLink: parsedEvent.registrationLink,
-                        location: parsedEvent.location,
-                        tags: parsedEvent.tags,
-                        status: confidenceData.status,
-                        userId: user._id,
-                  });
-                  await newEvent.save();
+                        if (genAIEvent && !genAIEvent.isRealEvent) {
+                              console.log(`Event titled "${parsedEvent.title}" is rejected by GenAI as it is not a real event`);
+                              continue;
+                        }
 
-                  processedEvents.push({
-                        gmailId: email.id,
-                        subject: email.subject,
-                        from: email.from,
-                        confidenceScore: confidenceData.score,
-                        parsedEvent: {
-                              ...parsedEvent,
-                              status: confidenceData.status, 
-                        },
-                  });
+                        // Calculate confidence score for parsed event and decide whether to save it or not
+                        const confidenceData = calculateConfidenceScore(email, parsedEvent);
+                        if (confidenceData.status === "Rejected") {
+                              console.log(`Event titled "${parsedEvent.title}" is rejected due to poor confidence score below 40`);
+                              continue;
+                        }
+                        if (!confidenceData.isTrustedSender) {
+                              console.log(`Event titled "${parsedEvent.title}" is from untrusted sender: ${email.from}`);
+                              confidenceData.status = "Pending";
+                        }
+
+                        const newEvent = new Event({
+                              title: parsedEvent.title,
+                              description: parsedEvent.description,
+                              fullEmailBody: parsedEvent.fullEmailBody,
+                              club: parsedEvent.club,
+                              eventDate: parsedEvent.eventDate,
+                              eventTime: parsedEvent.eventTime,
+                              registrationDeadline: parsedEvent.registrationDeadline,
+                              registrationLink: parsedEvent.registrationLink,
+                              location: parsedEvent.location,
+                              tags: parsedEvent.tags,
+                              status: confidenceData.status,
+                              userId: user._id,
+                        });
+                        await newEvent.save();
+
+                        processedEvents.push({
+                              gmailId: email.id,
+                              subject: email.subject,
+                              from: email.from,
+                              confidenceScore: confidenceData.score,
+                              parsedEvent: {
+                                    ...parsedEvent,
+                                    status: confidenceData.status, 
+                              },
+                        });
+                  }
+                  user.isOnboarded = true;
+                  user.lastEmailFetchedAt = new Date();
+                  await user.save();
+            }
+            catch (error) {
+                  console.error(`Error processing emails for user ${user.email}:`, error.message);
+                  continue;
             }
       }
+      console.log("Email processing completed for all users!");
       return processedEvents;
 };     
 

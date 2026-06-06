@@ -14,14 +14,64 @@ const setGmailClient = (refreshToken) => {
       });
 };
 
-const fetchLatestEmails = async (refreshToken) => {
+const extractBodyFromParts = (parts) => {
+      for (const part of parts) {
+            if (part.mimeType === 'text/plain' && part.body?.data) {
+                  return part.body.data;
+            }
+            if (part.mimeType === 'text/html' && part.body?.data) {
+                  return part.body.data;
+            }
+            if (part.parts) {
+                  const nestedResult = extractBodyFromParts(part.parts);
+                  if (nestedResult) {
+                        return nestedResult;
+                  }
+            }
+      }
+      return '';
+};
+
+const fetchOnboardingEmails = async (refreshToken) => {
       const gmail = setGmailClient(refreshToken);
       try {
             const res = await gmail.users.messages.list({
                   userId: 'me',
-                  maxResults: 50,
+                  maxResults: process.env.ONBOARDING_EMAIL_FETCH_LIMIT,
                   labelIds: ['INBOX'],
-                  q: 'newer_than:20d',
+            });
+            const messages = res.data.messages || [];
+            console.log(`Fetched ${messages.length} emails from Gmail`);
+      
+            const emailData = [];
+            for (const message of messages) {
+                  const email = await gmail.users.messages.get({
+                        userId: 'me',
+                        id: message.id,
+                  });
+                  const headers = email.data.payload.headers;
+                  const subject = headers.find(h => h.name === 'Subject')?.value || '';
+                  const from = headers.find(h => h.name === 'From')?.value || '';
+                  const snippet = email.data.snippet || '';
+
+                  emailData.push( { id: message.id, subject, from, snippet} );
+            }
+            return emailData;
+      }
+      catch (error) {
+            console.error('Error fetching emails..', error.message);
+            return [];
+      }
+}
+
+const fetchLatestEmails = async (refreshToken, afterDate) => {
+      const gmail = setGmailClient(refreshToken);
+      try {
+            const res = await gmail.users.messages.list({
+                  userId: 'me',
+                  maxResults: 10,
+                  labelIds: ['INBOX'],
+                  q: `after:${Math.floor(afterDate.getTime() / 1000)}`,
             });
             const messages = res.data.messages || [];
             console.log(`Fetched ${messages.length} emails from Gmail`);
@@ -42,28 +92,10 @@ const fetchLatestEmails = async (refreshToken) => {
             return emailData;
       }
       catch (error) {
-            console.error('Error fetching emails..', error);
+            console.error('Error fetching emails..', error.message);
             return [];
       }
 }
-
-const extractBodyFromParts = (parts) => {
-      for (const part of parts) {
-            if (part.mimeType === 'text/plain' && part.body?.data) {
-                  return part.body.data;
-            }
-            if (part.mimeType === 'text/html' && part.body?.data) {
-                  return part.body.data;
-            }
-            if (part.parts) {
-                  const nestedResult = extractBodyFromParts(part.parts);
-                  if (nestedResult) {
-                        return nestedResult;
-                  }
-            }
-      }
-      return '';
-};
 
 const fetchFullEmailBody = async (messageId, refreshToken) => {
       const gmail = setGmailClient(refreshToken);
@@ -107,4 +139,5 @@ const fetchFullEmailBody = async (messageId, refreshToken) => {
 module.exports = {
       fetchLatestEmails,
       fetchFullEmailBody,
+      fetchOnboardingEmails,
 };

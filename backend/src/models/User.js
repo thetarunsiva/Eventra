@@ -23,6 +23,14 @@ const userSchema = new mongoose.Schema({
             type: String,
             default: null,
       },
+      isOnboarded: {
+            type: Boolean,
+            default: false,
+      },
+      lastEmailFetchedAt: {
+            type: Date,
+            default: null,
+      },
       role: {
             type: String,
             required: true,
