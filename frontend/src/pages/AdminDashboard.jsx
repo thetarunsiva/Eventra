@@ -10,7 +10,7 @@ function AdminDashboard() {
             const fetchPendingEvents = async () => {
                   try {
                         const token = localStorage.getItem("token");
-                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending`, 
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending/all`, 
                               {
                                     headers: {
                                           Authorization: `Bearer ${token}`,

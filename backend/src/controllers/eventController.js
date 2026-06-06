@@ -88,6 +88,19 @@ const getPendingEvents = async (req, res) => {
       }
 };
 
+const getAllPendingEvents = async (req, res) => {
+      try {
+            const events = await Event.find({
+                  status: "Pending",
+            }).sort({ eventDate: 1 });
+            res.json(events);
+      }
+      catch (error) {
+            console.error("Error fetching pending events:", error);
+            res.status(500).json({ message: "Server error while fetching pending events" });
+      }
+};
+
 const createEvent = async (req, res) => {
       try {
             const newEvent = new Event(req.body);
@@ -170,6 +183,7 @@ module.exports = {
       getAllEvents,
       getApprovedEvents,
       getPendingEvents,
+      getAllPendingEvents,
       createEvent,
       updateEvent,
       approveEvent,
