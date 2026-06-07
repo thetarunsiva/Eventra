@@ -101,4 +101,38 @@ router.get(
       }
 );
 
+router.post(
+      '/demo-login',
+      async (req, res) => {
+            try {
+                  const role = req.body.role || 'user';
+                  let user;
+                  if (role === 'Admin') {
+                        user = await User.findOne({ email: "demoadmin@eventra.com" });
+                  }
+                  else {
+                        user = await User.findOne({ email: "tarun2410336@ssn.edu.in" });
+                  }
+                  if (!user) {
+                        return res.status(404).json({
+                              success: false,
+                              message: "Demo user not found!",
+                        });
+                  }
+                  const token = jwt.sign(
+                        { _id: user._id, userId: user._id, role: user.role },
+                        process.env.JWT_SECRET,
+                        { expiresIn: '7d' },
+                  );
+                  res.json({ token });
+            }
+            catch (error) {
+                  res.status(500).json({
+                        success: false,
+                        message: "Server error during demo login!",
+                  });
+            }
+      }
+)
+
 module.exports = router;
