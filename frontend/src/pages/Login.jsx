@@ -41,7 +41,7 @@ function Login() {
                   <h1>Eventra</h1>
                   <h3>Never miss out on important Event updates anymore..</h3>
                   <button onClick= {handleLogin} style={{ padding: "10px 20px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer"}}> Login with Google </button>
-                  <hr />
+                  
                   <div style={{ display: "flex", gap: "15px" }}>
                         <button onClick={() => handleDemoLogin("User")} style={{ padding: "10px 20px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer"}}> Demo Login as User </button>
                         <button onClick={() => handleDemoLogin("Admin")} style={{ padding: "10px 20px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer"}}> Demo Login as Admin </button>
