@@ -141,7 +141,8 @@ function AdminDashboard() {
                   alert("All events removed successfully!");
             }
             catch (error) {
-                  console.error("Error removing event:", error);
+                  console.error("Error removing events:", error.response?.data || error.message);
+                  alert("Failed to remove events: " + (error.response?.data?.message || error.message));
             }
       }
 
