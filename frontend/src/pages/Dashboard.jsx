@@ -141,21 +141,34 @@ function Dashboard() {
             }));
 
       return (
-            <div>
-                  <h1>Dashboard Page</h1>
-                  <button onClick={handleLogout}> Logout </button>
-                  <hr />
-                  <h2>
-                        Showing {filteredEvents.length} of {events.length} Approved Events
-                  </h2>
-                  <input 
+            <div style={{ maxWidth: "900px", margin: "0 auto", padding: "24px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
+                        <h2 style={{ margin: 0}}>Eventra</h2>
+                        <button onClick={handleLogout} style={{ padding:"8px 16px", border:"1px solid #ccc", borderRadius:"6px", cursor:"pointer" }}> Logout </button>
+                  </div>
+                  <div style={{ display:"flex", gap:"16px", marginBottom:"24px" }}>
+                        <div style={{ border:"1px solid #e5e5e5", borderRadius:"8px", padding:"16px 24px", flex:1, textAlign:"center" }}>
+                        <h2 style={{ margin:0, fontSize:"2rem" }}>{events.length}</h2>
+                        <p style={{ margin:0, color:"#666" }}>Approved</p>
+                        </div>
+                        <div style={{ border:"1px solid #e5e5e5", borderRadius:"8px", padding:"16px 24px", flex:1, textAlign:"center" }}>
+                        <h2 style={{ margin:0, fontSize:"2rem" }}>{pendingEvents.length}</h2>
+                        <p style={{ margin:0, color:"#666" }}>Pending</p>
+                        </div>
+                        <div style={{ border:"1px solid #e5e5e5", borderRadius:"8px", padding:"16px 24px", flex:1, textAlign:"center" }}>
+                        <h2 style={{ margin:0, fontSize:"2rem" }}>{events.length + pendingEvents.length}</h2>
+                        <p style={{ margin:0, color:"#666" }}>Total</p>
+                        </div>
+                  </div>
+                  <input
                         type="text"
-                        placeholder="Search by title, club, tags, description or location.."
+                        placeholder="Search by title, club, tags.."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
+                        style={{ width:"100%", padding:"10px 14px", border:"1px solid #ccc", borderRadius:"6px", fontSize:"14px", marginBottom:"24px", boxSizing:"border-box" }}
                   />
-                  <h2> Calendar view </h2>
-                  <div style={{ height: "600px", marginBottom: "40px" }}>
+                  <h3 style={{ marginBottom:"12px" }}> Calendar view </h3>
+                  <div style={{ height:"500px", marginBottom:"40px" }}>
                         <Calendar
                               localizer={localizer}
                               events={calendarEvents}
@@ -170,48 +183,66 @@ function Dashboard() {
                               }
                         />
                   </div>
-                  <hr />
+                  <h3 style={{ marginTop:"32px" }}> Approved Events ({filteredEvents.length})</h3>
                   {filteredEvents.map((event) => {
                         return (
-                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{cursor: "pointer"}}>
-                                    <h2>{event.title}</h2>
-                                    <p>
+                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{ border:"1px solid #e5e5e5", borderRadius:"8px", padding:"16px 20px", marginBottom:"16px", cursor:"pointer" }}>
+                                    <h3 style={{ margin:"0 0 8px 0" }}>{event.title}</h3>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Date: </strong>
                                           {formatDate(event.eventDate)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Time: </strong>
                                           {displayValue(event.eventTime)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Location: </strong>
                                           {displayValue(event.location)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Club: </strong>
                                           {displayValue(event.club)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(event.registrationDeadline)}
                                     </p>
-                                    <div>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Tags:</strong>{" "}
                                           {event.tags?.join(" | ") || "N/A"}
-                                    </div>
-                                    <p>
+                                    </p>
+                                    <p style={{ margin:"8px 0", color:"#444" }}>
                                           {cleanDescription(event.description).slice(0, 360)}
                                           ...
                                     </p>
                                     {
                                           event.registrationLink && (
-                                                <a 
+                                                <a
                                                       href={event.registrationLink}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
-                                                      onClick={(e) => e.stopPropagation()} 
+                                                      onClick={(e) => e.stopPropagation()}
+                                                      style={{
+                                                            textDecoration: "none",
+                                                            display: "inline-block",
+                                                            marginTop: "12px",
+                                                      }}
                                                 >
-                                                      Register here
+                                                      <button
+                                                            style={{
+                                                                  padding: "10px 16px",
+                                                                  border: "1px solid #2563eb",
+                                                                  borderRadius: "8px",
+                                                                  backgroundColor: "#2563eb",
+                                                                  color: "white",
+                                                                  fontSize: "14px",
+                                                                  fontWeight: "500",
+                                                                  cursor: "pointer",
+                                                            }}
+                                                      >
+                                                            Register here
+                                                      </button>
                                                 </a>
                                           )
                                     }
@@ -220,59 +251,75 @@ function Dashboard() {
                         );
                   })}
                   <hr />
-                  <h2>
+                  <h3 style={{ marginTop:"32px" }}>
                         Pending Events: {pendingEvents.length}
-                  </h2>
+                  </h3>
                   {sortedPendingEvents.map((event) => {
                         return (
-                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{cursor: "pointer"}}>
-                                    <h2>{event.title}</h2>
+                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{ border:"1px solid #f59e0b", borderRadius:"8px", padding:"16px 20px", marginBottom:"16px", cursor:"pointer" }}>
+                                    <h3 style={{ margin:0 }}>{event.title}</h3>
+                                    <span style={{ backgroundColor:"#fef3c7", color:"#92400e", padding:"4px 10px", borderRadius:"999px", fontSize:"12px" }}>Pending</span>
                                     <div style={{ border: "1px solid orange", padding: "8px 12px", borderRadius: "6px", marginBottom: "12px" }}>
                                           <h4 style={{ margin: 0 }}>⚠️ This event is <strong>PENDING Approval</strong> and may be subject to changes</h4>
                                     </div>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Date: </strong>
                                           {formatDate(event.eventDate)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Time: </strong>
                                           {displayValue(event.eventTime)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Location: </strong>
                                           {displayValue(event.location)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Club: </strong>
                                           {displayValue(event.club)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(event.registrationDeadline)}
                                     </p>
-                                    <div>
+                                    <p style={{ margin:"4px 0" }}>
                                           <strong>Tags:</strong>{" "}
                                           {event.tags?.join(" | ") || "N/A"}
-                                    </div>
-                                    <p>
+                                    </p>
+                                    <p style={{ margin:"8px 0", color:"#444" }}>
                                           {cleanDescription(event.description).slice(0, 360)}
                                           ...
                                     </p>
                                     {
                                           event.registrationLink && (
-                                                <a 
+                                                <a
                                                       href={event.registrationLink}
                                                       target="_blank"
                                                       rel="noopener noreferrer"
                                                       onClick={(e) => e.stopPropagation()}
+                                                      style={{
+                                                            textDecoration: "none",
+                                                            display: "inline-block",
+                                                            marginTop: "12px",
+                                                      }}
                                                 >
-                                                      <button>
+                                                      <button
+                                                            style={{
+                                                                  padding: "10px 16px",
+                                                                  border: "1px solid #f59e0b",
+                                                                  borderRadius: "8px",
+                                                                  backgroundColor: "#f59e0b",
+                                                                  color: "white",
+                                                                  fontSize: "14px",
+                                                                  fontWeight: "500",
+                                                                  cursor: "pointer",
+                                                            }}
+                                                      >
                                                             Register here
                                                       </button>
                                                 </a>
                                           )
                                     }
-                                    <hr />
                               </div>
                         );
                   })}
@@ -317,8 +364,19 @@ function Dashboard() {
                                                       borderBottom: "1px solid #ddd",
                                                 }}
                                           >
-                                                <h2>{selectedEvent.title}</h2>
-                                                <button onClick={() => setSelectedEvent(null)}>
+                                                <h3>{selectedEvent.title}</h3>
+                                                <button
+                                                      onClick={() => setSelectedEvent(null)}
+                                                      style={{
+                                                            border: "1px solid #e5e5e5",
+                                                            backgroundColor: "white",
+                                                            borderRadius: "8px",
+                                                            width: "36px",
+                                                            height: "36px",
+                                                            cursor: "pointer",
+                                                            fontWeight: "600",
+                                                      }}
+                                                >
                                                       X
                                                 </button>
                                           </div>
