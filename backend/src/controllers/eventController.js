@@ -1,4 +1,5 @@
 const Event = require('../models/Event');
+const User = require('../models/User');
 
 const getEventById = async (req, res) => {
       try {
@@ -101,6 +102,43 @@ const getAllPendingEvents = async (req, res) => {
       }
 };
 
+const getGroupedPendingEvents = async (req, res) => {
+      try {
+            const groupedEvents = await Event.aggregate([
+                  { $match: { status: "Pending" } },
+                  { $group: {
+                        _id: {
+                              title: "$title",
+                              eventDate: "$eventDate",
+                              club: "$club",
+                        },
+                        count: { $sum: 1 },
+                        eventIds: { $push: "$_id"},
+                        userIds: { $push: "$userId" },
+                        sampleEvent: { $first: "$$ROOT" },
+                  }}
+            ]);
+            const result = [];
+            for (const group of groupedEvents) {
+                  const users = await User.find({
+                        _id: { $in: group.userIds }
+                  }).select("email");
+                  result.push({
+                        title: group._id,
+                        count: group.count,
+                        eventIds: group.eventIds,
+                        users,
+                        sampleEvent: group.sampleEvent,
+                  });
+            }
+            res.json(result);
+      }
+      catch (error) {
+            console.error("Error fetching Grouped pending events:", error);
+            res.status(500).json({ message: "Server error while fetching Grouped pending events" });
+      }
+};
+
 const createEvent = async (req, res) => {
       try {
             const newEvent = new Event(req.body);
@@ -160,6 +198,26 @@ const approveEvent = async (req, res) => {
       }
 }
 
+const approveManyEvents = async (req, res) => {
+      try {
+            const { eventIds } = req.body;
+            if (!eventIds || eventIds.length === 0) {
+                  return res.status(404).json({ message: "No events provided to approve LOL!" });
+            }
+            await Event.updateMany(
+                  { _id: { $in: eventIds } },
+                  { status: "Approved" },
+            );
+            res.json({
+                  message: `{eventIds.length} events Approved successfully!`,
+            });
+      }
+      catch (error) {
+            console.error("Error approving events!", error);
+            res.status(500).json({ message: "Server error while approving events!" });
+      }
+}
+
 const deleteEvent = async (req, res) => {
       try {
             const deletedEvent = await Event.findByIdAndDelete(req.params.id);
@@ -177,6 +235,23 @@ const deleteEvent = async (req, res) => {
       }
 };
 
+const deleteManyEvents = async (req, res) => {
+      try {
+            const { eventIds } = req.body;
+            if (!eventIds || eventIds.length === 0) {
+                  return res.status(404).json({ message: "No events provided to remove!" });
+            }
+            await Event.deleteMany({ _id: { $in: eventIds } });
+            res.json({ 
+                  message: "Events deleted successfully", 
+            });
+      }
+      catch (error) {
+            console.error("Error deleting events!", error);
+            res.status(500).json({ message: "Server error while deleting events" });
+      }
+};
+
 
 module.exports = {
       getEventById,
@@ -184,8 +259,11 @@ module.exports = {
       getApprovedEvents,
       getPendingEvents,
       getAllPendingEvents,
+      getGroupedPendingEvents,
       createEvent,
       updateEvent,
       approveEvent,
-      deleteEvent
+      approveManyEvents,
+      deleteEvent,
+      deleteManyEvents,
 };
