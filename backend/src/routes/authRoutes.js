@@ -111,7 +111,7 @@ router.post(
                         user = await User.findOne({ email: "demoadmin@eventra.com" });
                   }
                   else {
-                        user = await User.findOne({ email: "tarun2410336@ssn.edu.in" });
+                        user = await User.findOne({ email: "tanish2410991@ssn.edu.in" });
                   }
                   if (!user) {
                         return res.status(404).json({
