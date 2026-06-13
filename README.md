@@ -1,4 +1,4 @@
-### Eventra
+# Eventra
 
 University email inboxes become noisy surprisingly fast.
 
