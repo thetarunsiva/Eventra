@@ -168,12 +168,32 @@ function AdminDashboard() {
       });
 
       return (
-            <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 24px" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
                   {/* Navbar */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
                         <div>
-                              <span style={{ fontSize: "20px", fontWeight: "600" }}>Eventra</span>
-                              <span style={{ fontSize: "13px", color: "#666", marginLeft: "8px" }}>Admin</span>
+                              <span
+                                    style={{
+                                          fontSize: "28px",
+                                          fontWeight: "700",
+                                          letterSpacing: "-0.5px"
+                                    }}
+                              >
+                                    Eventra
+                              </span>
+                              <span
+                                    style={{
+                                          fontSize: "12px",
+                                          color: "#92400e",
+                                          background: "#fef3c7",
+                                          padding: "4px 10px",
+                                          borderRadius: "999px",
+                                          marginLeft: "10px",
+                                          fontWeight: "600"
+                                    }}
+                              >
+                                    Admin
+                              </span>
                         </div>
                         <button onClick={handleLogout} style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: "6px", cursor: "pointer", background: "white" }}>
                               Logout
@@ -188,37 +208,45 @@ function AdminDashboard() {
                   {/* Event cards */}
                   {sortedEvents.map((group) => {
                         return (
-                              <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)} style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 20px", marginBottom: "16px", cursor: "pointer" }}>
-                                    <h3 style={{ margin: "0 0 8px 0" }}>{group.sampleEvent.title}</h3>
-                                    <p style={{ margin: "4px 0" }}>
+                              <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)}
+                              style={{
+                                    border: "1px solid #e5e5e5",
+                                    borderRadius: "12px",
+                                    padding: "20px 24px",
+                                    minHeight: "240px",
+                                    marginBottom: "16px",
+                                    cursor: "pointer"
+                              }}>
+                                    <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700"}}>{group.sampleEvent.title}</h3>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Date: </strong>
                                           {formatDate(group.sampleEvent.eventDate)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Time: </strong>
                                           {displayValue(group.sampleEvent.eventTime)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Location: </strong>
                                           {displayValue(group.sampleEvent.location)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Club: </strong>
                                           {displayValue(group.sampleEvent.club)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Extractions: </strong>
                                           {group.count} User(s)
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Extracted from: </strong>
                                           {group.users.map(user => user.email).join(", ")}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(group.sampleEvent.registrationDeadline)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Tags:</strong>{" "}
                                           {group.sampleEvent.tags?.join(" | ") || "N/A"}
                                     </p>
@@ -226,7 +254,7 @@ function AdminDashboard() {
                                           {cleanDescription(group.sampleEvent.description).slice(0, 360)}
                                           ...
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Registration Link: </strong>
                                           {group.sampleEvent.registrationLink ? (
                                                 <a

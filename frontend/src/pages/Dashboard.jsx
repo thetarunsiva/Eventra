@@ -141,10 +141,19 @@ function Dashboard() {
             }));
 
       return (
-            <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 24px" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
                   {/* Navbar */}
                   <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
-                        <h2 style={{ margin: 0 }}>Eventra</h2>
+                        <h2
+                              style={{
+                                    margin: 0,
+                                    fontSize: "28px",
+                                    fontWeight: "700",
+                                    letterSpacing: "-0.5px"
+                              }}
+                        >
+                              Eventra
+                        </h2>
                         <button onClick={handleLogout} style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: "6px", cursor: "pointer", background: "white" }}>
                               Logout
                         </button>
@@ -152,15 +161,15 @@ function Dashboard() {
 
                   {/* Stats */}
                   <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 24px", flex: 1, textAlign: "center" }}>
+                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{events.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Approved</p>
                         </div>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 24px", flex: 1, textAlign: "center" }}>
+                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{pendingEvents.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Pending</p>
                         </div>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 24px", flex: 1, textAlign: "center" }}>
+                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{events.length + pendingEvents.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Total</p>
                         </div>
@@ -199,33 +208,43 @@ function Dashboard() {
                   </h3>
                   {filteredEvents.map((event) => {
                         return (
-                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 20px", marginBottom: "16px", cursor: "pointer" }}>
-                                    <h3 style={{ margin: "0 0 8px 0" }}>{event.title}</h3>
-                                    <p style={{ margin: "4px 0" }}>
+                              <div key={event._id} onClick={() => setSelectedEvent(event)} 
+                              style={{
+                                    border: "1px solid #e5e5e5",
+                                    borderRadius: "12px",
+                                    padding: "20px 24px",
+                                    minHeight: "240px",
+                                    marginBottom: "16px",
+                                    cursor: "pointer"
+                              }}>
+                                    <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700"}}>
+                                                {event.title}
+                                    </h3>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Date: </strong>
                                           {formatDate(event.eventDate)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Time: </strong>
                                           {displayValue(event.eventTime)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Location: </strong>
                                           {displayValue(event.location)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Club: </strong>
                                           {displayValue(event.club)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(event.registrationDeadline)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Tags:</strong>{" "}
                                           {event.tags?.join(" | ") || "N/A"}
                                     </p>
-                                    <p style={{ margin: "8px 0", color: "#444" }}>
+                                    <p style={{ margin: "8px 0", color: "#4B3A32", fontStyle: "italic" }}>
                                           {cleanDescription(event.description).slice(0, 360)}
                                           ...
                                     </p>
@@ -247,7 +266,7 @@ function Dashboard() {
                   })}
 
                   {/* Pending Events */}
-                  <h3 style={{ marginTop: "32px", marginBottom: "16px" }}>
+                  <h3 style={{ marginTop: "32px", marginBottom: "16px" }}> 
                         Pending Events: {pendingEvents.length}
                   </h3>
                   {sortedPendingEvents.map((event) => {
@@ -260,31 +279,31 @@ function Dashboard() {
                                     <div style={{ border: "1px solid orange", padding: "8px 12px", borderRadius: "6px", marginBottom: "12px" }}>
                                           <h4 style={{ margin: 0 }}>⚠️ This event is <strong>PENDING Approval</strong> and may be subject to changes</h4>
                                     </div>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Date: </strong>
                                           {formatDate(event.eventDate)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Time: </strong>
                                           {displayValue(event.eventTime)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Location: </strong>
                                           {displayValue(event.location)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Club: </strong>
                                           {displayValue(event.club)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(event.registrationDeadline)}
                                     </p>
-                                    <p style={{ margin: "4px 0" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
                                           <strong>Tags:</strong>{" "}
                                           {event.tags?.join(" | ") || "N/A"}
                                     </p>
-                                    <p style={{ margin: "8px 0", color: "#444" }}>
+                                    <p style={{ margin: "8px 0", color: "#4B3A32", fontStyle: "italic" }}>
                                           {cleanDescription(event.description).slice(0, 360)}
                                           ...
                                     </p>
