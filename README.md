@@ -1,6 +1,6 @@
 # Eventra
 
-University email inboxes become noisy surprisingly fast.
+University email inboxes become noisy surprisingly fast!
 
 A typical SSN student receives a constant stream of LMS notifications, attendance updates, department circulars, transport route announcements, library notices, placement communications, and newsletters from platforms they registered for months or even years ago.
 
@@ -26,55 +26,86 @@ Only @ssn.edu.in Google accounts can authenticate
 
 ---
 
-# What Makes Eventra Interesting?
+# Processing Architecture
 
-Most email-to-event systems would simply send every email to an LLM.
+Most email-to-event systems take the expensive route:
 
-Eventra intentionally avoids that.
+```text
+Email
+  ↓
+LLM
+  ↓
+Database
+```
 
-### Smart Multi-Stage Processing
+Every email is sent to an AI model regardless of whether it contains useful information.
 
+Eventra intentionally avoids that design.
+
+### Processing Pipeline
+
+```text
 Student Login
-      ↓
-Google OAuth
-      ↓
-Gmail API
-      ↓
-Email Fetching
-      ↓
-Event Classification
-      ↓
-Regex Extraction
-      ↓
-Gemini Fallback
-      ↓
+      │
+      ▼
+ Google OAuth
+      │
+      ▼
+   Gmail API
+      │
+      ▼
+ Email Fetching
+      │
+      ▼
+Event Classifier
+      │
+      ├── Not an Event ──► Discard
+      │
+      ▼
+ Regex Extraction
+      │
+      ├── Extraction Successful ──► Save Event
+      │
+      ▼
+ Gemini Fallback
+      │
+      ▼
 Confidence Scoring
-      ↓
-MongoDB
-      ↓
-Event Dashboard
+      │
+      ├── (Score >= 90) ──► Approved ──► Publish 
+      │
+      └── (Score >= 50) ──► Pending ──► Admin Review
+      │
+      ▼
+    MongoDB
+      │
+      ▼
+ Event Dashboard
+```
 
-=> Lightweight rule-based classification runs first
+### Design Decisions
+
+=> Lightweight rule-based classification runs before any AI call
 
 => Obvious non-event emails are discarded immediately
 
-=> Regex-based extraction attempts to parse event information
+=> Regex extraction handles structured announcements at near-zero cost
 
-=> Gemini is only invoked when critical fields cannot be confidently extracted
+=> Gemini is invoked only when critical fields cannot be confidently extracted
 
-=> Human review is used only when confidence falls below an approval threshold
+=> Confidence scoring determines whether an event can be auto-approved
 
-This reduces:
+=> Human review is reserved for low-confidence edge cases
 
-=> AI usage
+### Benefits
 
-=> Processing latency
+=> Reduced Gemini API usage
 
-=> Database writes
+=> Lower inference costs
 
-=> Infrastructure costs
+=> Smaller database footprint
 
-while maintaining extraction quality.
+=> Higher scalability as user count grows
 
 ---
 
@@ -148,7 +179,7 @@ Because synchronization runs across registered users, the system maintains a con
 
 ---
 
-# Extraction Strategy & Cost Optimization
+# Extraction Strategy
 
 ### Stage 1 — Event Classification
 
@@ -214,7 +245,7 @@ The decision prioritizes:
 
 ---
 
-# Confidence Scoring & Human Review
+# Confidence Scoring
 
 Every extracted event receives a confidence score.
 
