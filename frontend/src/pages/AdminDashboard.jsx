@@ -170,7 +170,7 @@ function AdminDashboard() {
       return (
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
                   {/* Navbar */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: "1px solid #eadfd8", marginBottom: "28px" }}>
                         <div>
                               <span
                                     style={{
@@ -195,7 +195,7 @@ function AdminDashboard() {
                                     Admin
                               </span>
                         </div>
-                        <button onClick={handleLogout} style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: "6px", cursor: "pointer", background: "white" }}>
+                        <button onClick={handleLogout} style={{ padding: "10px 18px", border: "1px solid #eadfd8", borderRadius: "12px", cursor: "pointer", background: "#fffdfc", color: "#2D1B12", fontWeight: "500" }}>
                               Logout
                         </button>
                   </div>
@@ -210,12 +210,14 @@ function AdminDashboard() {
                         return (
                               <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)}
                               style={{
-                                    border: "1px solid #e5e5e5",
-                                    borderRadius: "12px",
-                                    padding: "20px 24px",
+                                    background: "#fffdfc",
+                                    border: "1px solid #eadfd8",
+                                    borderRadius: "16px",
+                                    padding: "24px",
                                     minHeight: "240px",
-                                    marginBottom: "16px",
-                                    cursor: "pointer"
+                                    marginBottom: "20px",
+                                    cursor: "pointer",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
                               }}>
                                     <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700"}}>{group.sampleEvent.title}</h3>
                                     <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
@@ -290,7 +292,7 @@ function AdminDashboard() {
                         >
                               <div
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{ backgroundColor: "white", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "10px" }}
+                                    style={{ backgroundColor: "#fffdfc", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "20px" }}
                               >
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "white", padding: "12px 20px", borderBottom: "1px solid #ddd" }}>
                                           <h3 style={{ margin: 0 }}>{selectedEvent.title}</h3>

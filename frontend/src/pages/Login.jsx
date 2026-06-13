@@ -37,18 +37,18 @@ function Login() {
             }
       }
       return (
-            <div style={{ display:"flex", justifyContent:"center", alignItems:"center", height:"100vh", flexDirection:"column", gap: "12px", padding: "0 16px" }}>
-                  <h1 style={{ fontSize: "4rem", marginBottom: "8px", fontWeight: "700", fontFamily: "Outfit, sans-serif", textShadow: "3px 3px 0px rgba(0,0,0,0.15)" }}>
+            <div style={{ display:"flex", justifyContent:"center", alignItems:"center", height:"100vh", flexDirection:"column", gap: "18px", padding: "0 16px" }}>
+                  <h1 style={{ fontSize: "4rem", marginBottom: "14px", fontWeight: "700", fontFamily: "Outfit, sans-serif", textShadow: "3px 3px 0px rgba(0,0,0,0.15)" }}>
                         Eventra
                   </h1>
-                  <h3 style={{ color: "#4B3A32", fontWeight: "normal", marginBottom: "8px", textAlign: "center", maxWidth: "500px", lineHeight: "1.6" }}>"Turn college email clutter into your next opportunity"</h3>
-                  <button onClick= {handleLogin} style={{ padding: "10px 24px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer", fontSize: "14px", transform: "translateY(-2px)" }}> 
+                  <h3 style={{ color: "#5C4A40", fontWeight: "normal", marginBottom: "8px", textAlign: "center", maxWidth: "500px", lineHeight: "1.6" }}>Turn college email clutter into your next opportunity.</h3>
+                  <button onClick= {handleLogin} style={{ padding: "13px 30px", background: "#2D1B12", color: "white", border: "none", borderRadius: "12px", cursor: "pointer", fontSize: "15px", fontWeight: "600", marginTop: "6px" }}> 
                         Continue with Google 
                   </button>
-                  <p style={{ color: "#999", margin: "4px 0", fontSize: "12px" }}>or Try a demo</p>
+                  <p style={{ color: "#999", margin: "4px 0", fontSize: "12px", fontWeight: "500" }}>or explore with a demo</p>
                   <div style={{ display: "flex", gap: "12px" }}>
-                        <button onClick={() => handleDemoLogin("User")} style={{ padding: "10px 20px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer", fontSize: "14px"}}> Demo User </button>
-                        <button onClick={() => handleDemoLogin("Admin")} style={{ padding: "10px 20px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer", fontSize: "14px"}}> Demo Admin </button>
+                        <button onClick={() => handleDemoLogin("User")} style={{ padding: "11px 22px", background: "#fffdfc", border: "1px solid #e5d6cc", borderRadius: "12px", cursor: "pointer", fontSize: "14px", fontWeight: "500", color: "#2D1B12" }}> Demo User </button>
+                        <button onClick={() => handleDemoLogin("Admin")} style={{ padding: "11px 22px", background: "#fffdfc", border: "1px solid #e5d6cc", borderRadius: "12px", cursor: "pointer", fontSize: "14px", fontWeight: "500", color: "#2D1B12" }}> Demo Admin </button>
                   </div>
             </div>
       )

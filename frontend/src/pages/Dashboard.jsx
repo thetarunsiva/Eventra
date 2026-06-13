@@ -143,7 +143,7 @@ function Dashboard() {
       return (
             <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
                   {/* Navbar */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: "1px solid #eadfd8", marginBottom: "28px" }}>
                         <h2
                               style={{
                                     margin: 0,
@@ -154,22 +154,22 @@ function Dashboard() {
                         >
                               Eventra
                         </h2>
-                        <button onClick={handleLogout} style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: "6px", cursor: "pointer", background: "white" }}>
+                        <button onClick={handleLogout} style={{ padding: "10px 18px", border: "1px solid #eadfd8", borderRadius: "12px", cursor: "pointer", background: "#fffdfc", color: "#2D1B12", fontWeight: "500" }}>
                               Logout
                         </button>
                   </div>
 
                   {/* Stats */}
                   <div style={{ display: "flex", gap: "16px", marginBottom: "24px" }}>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
+                        <div style={{ background: "#fffdfc", border: "1px solid #eadfd8", borderRadius: "16px", padding: "24px", minHeight: "120px", flex: 1, textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{events.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Approved</p>
                         </div>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
+                        <div style={{ background: "#fffdfc", border: "1px solid #eadfd8", borderRadius: "16px", padding: "24px", minHeight: "120px", flex: 1, textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{pendingEvents.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Pending</p>
                         </div>
-                        <div style={{ border: "1px solid #e5e5e5", borderRadius: "12px", padding: "20px 24px", minHeight: "120px", flex: 1, textAlign: "center" }}>
+                        <div style={{ background: "#fffdfc", border: "1px solid #eadfd8", borderRadius: "16px", padding: "24px", minHeight: "120px", flex: 1, textAlign: "center", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
                               <h2 style={{ margin: 0, fontSize: "2rem" }}>{events.length + pendingEvents.length}</h2>
                               <p style={{ margin: 0, color: "#666" }}>Total</p>
                         </div>
@@ -181,7 +181,7 @@ function Dashboard() {
                         placeholder="Search by title, club, tags, description or location.."
                         value={searchTerm}
                         onChange={(e) => setSearchTerm(e.target.value)}
-                        style={{ width: "100%", padding: "10px 14px", border: "1px solid #ccc", borderRadius: "6px", fontSize: "14px", marginBottom: "24px", boxSizing: "border-box" }}
+                        style={{ width: "100%", padding: "14px 18px", borderRadius: "12px", border: "1px solid #eadfd8", background: "#fffdfc", fontSize: "15px", marginBottom: "28px", boxSizing: "border-box", boxShadow: "0 2px 8px rgba(0,0,0,0.03)" }}
                   />
 
                   {/* Calendar */}
@@ -210,12 +210,14 @@ function Dashboard() {
                         return (
                               <div key={event._id} onClick={() => setSelectedEvent(event)} 
                               style={{
-                                    border: "1px solid #e5e5e5",
-                                    borderRadius: "12px",
-                                    padding: "20px 24px",
+                                    background: "#fffdfc",
+                                    border: "1px solid #eadfd8",
+                                    borderRadius: "16px",
+                                    padding: "24px",
                                     minHeight: "240px",
-                                    marginBottom: "16px",
-                                    cursor: "pointer"
+                                    marginBottom: "20px",
+                                    cursor: "pointer",
+                                    boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
                               }}>
                                     <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700"}}>
                                                 {event.title}
@@ -271,7 +273,7 @@ function Dashboard() {
                   </h3>
                   {sortedPendingEvents.map((event) => {
                         return (
-                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{ border: "1px solid #f59e0b", borderRadius: "8px", padding: "16px 20px", marginBottom: "16px", cursor: "pointer" }}>
+                              <div key={event._id} onClick={() => setSelectedEvent(event)} style={{ background: "#fffdfc", border: "1px solid #f5d08a", borderRadius: "16px", padding: "24px", marginBottom: "20px", cursor: "pointer", boxShadow: "0 4px 12px rgba(0,0,0,0.04)" }}>
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: "8px" }}>
                                           <h3 style={{ margin: 0 }}>{event.title}</h3>
                                           <span style={{ backgroundColor: "#fef3c7", color: "#92400e", padding: "4px 10px", borderRadius: "999px", fontSize: "12px" }}>Pending</span>
@@ -332,7 +334,7 @@ function Dashboard() {
                         >
                               <div
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{ backgroundColor: "white", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "10px" }}
+                                    style={{ backgroundColor: "#fffdfc", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "20px" }}
                               >
                                     <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "white", padding: "12px 20px", borderBottom: "1px solid #ddd" }}>
                                           <h3 style={{ margin: 0 }}>{selectedEvent.title}</h3>
