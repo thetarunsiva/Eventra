@@ -1,4 +1,4 @@
-# Eventra
+### Eventra
 
 University email inboxes become noisy surprisingly fast.
 
@@ -18,11 +18,8 @@ Instead of searching for opportunities, students receive a curated event dashboa
 
 # Live Demo
 
-Frontend:
-https://eventra-ssn.vercel.app/
-
-Backend:
-https://eventra-ssn-backend.onrender.com
+- Frontend: https://eventra-ssn.vercel.app/
+- Backend: https://eventra-ssn-backend.onrender.com
 
 Note:
 Only @ssn.edu.in Google accounts can authenticate
