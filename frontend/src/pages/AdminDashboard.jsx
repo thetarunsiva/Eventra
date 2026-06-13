@@ -7,21 +7,18 @@ function AdminDashboard() {
       const [events, setEvents] = useState([]);
       const [selectedEvent, setSelectedEvent] = useState(null);
       const [isDemoAdmin, setIsDemoAdmin] = useState(null);
+
       useEffect(() => {
             const fetchPendingEvents = async () => {
                   try {
                         const token = localStorage.getItem("token");
-                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending/grouped`, 
-                              {
-                                    headers: {
-                                          Authorization: `Bearer ${token}`,
-                                    },
-                              }
+                        const response = await axios.get(`${import.meta.env.VITE_API_URL}/events/pending/grouped`,
+                              { headers: { Authorization: `Bearer ${token}` } }
                         );
                         const userDeets = await axios.get(
                               `${import.meta.env.VITE_API_URL}/auth/me`,
-                              { headers: { Authorization: `Bearer ${token}`}}
-                        )
+                              { headers: { Authorization: `Bearer ${token}` } }
+                        );
                         setIsDemoAdmin(userDeets.data.user.email === "demoadmin@eventra.com");
                         setEvents(response.data);
                   }
@@ -53,12 +50,10 @@ function AdminDashboard() {
             try {
                   const token = localStorage.getItem("token");
                   await axios.patch(`${import.meta.env.VITE_API_URL}/events/${eventId}/approve`, {}, {
-                        headers: {
-                              Authorization: `Bearer ${token}`,
-                        }
+                        headers: { Authorization: `Bearer ${token}` }
                   });
                   setEvents(
-                        prev => 
+                        prev =>
                               prev.map(group => ({
                                     ...group,
                                     eventIds: group.eventIds.filter(id => String(id) !== String(eventId)),
@@ -81,9 +76,8 @@ function AdminDashboard() {
                         { eventIds },
                         { headers: { Authorization: `Bearer ${token}` } },
                   );
-                  // Removing approved events from Pending list..
                   setEvents(prev =>
-                  prev.filter(group =>
+                        prev.filter(group =>
                               !group.eventIds.some(id => eventIds.includes(String(id)))
                         )
                   );
@@ -100,12 +94,10 @@ function AdminDashboard() {
             try {
                   const token = localStorage.getItem("token");
                   await axios.delete(`${import.meta.env.VITE_API_URL}/events/${eventId}`, {
-                        headers: {
-                              Authorization: `Bearer ${token}`,
-                        }
+                        headers: { Authorization: `Bearer ${token}` }
                   });
                   setEvents(
-                        prev => 
+                        prev =>
                               prev.map(group => ({
                                     ...group,
                                     eventIds: group.eventIds.filter(id => String(id) !== String(eventId)),
@@ -114,7 +106,6 @@ function AdminDashboard() {
                               .filter(group => group.count > 0)
                   );
                   alert("Event removed successfully!");
-
             }
             catch (error) {
                   console.error("Error removing event:", error);
@@ -127,12 +118,10 @@ function AdminDashboard() {
             try {
                   const token = localStorage.getItem("token");
                   await axios.delete(
-                        `${import.meta.env.VITE_API_URL}/events/delete-many`, 
+                        `${import.meta.env.VITE_API_URL}/events/delete-many`,
                         {
                               data: { eventIds },
-                              headers: {
-                                    Authorization: `Bearer ${token}`,
-                              }
+                              headers: { Authorization: `Bearer ${token}` }
                         },
                   );
                   setEvents(
@@ -173,149 +162,138 @@ function AdminDashboard() {
             const dateA = a.sampleEvent.registrationDeadline || a.sampleEvent.eventDate || null;
             const dateB = b.sampleEvent.registrationDeadline || b.sampleEvent.eventDate || null;
             if (!dateA && !dateB) return 0;
-            if (!dateA) return 1; // A has no date → push A to end
-            if (!dateB) return -1; // B has no date → push B to end
+            if (!dateA) return 1;
+            if (!dateB) return -1;
             return new Date(dateA) - new Date(dateB);
       });
 
       return (
-            <div>
-                  <h1>Admin Dashboard Page</h1>
-                  <button onClick={handleLogout}> Logout </button>
-                  <h2>
+            <div style={{ maxWidth: "900px", margin: "0 auto", padding: "0 24px" }}>
+                  {/* Navbar */}
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "16px 0", borderBottom: "1px solid #e5e5e5", marginBottom: "24px" }}>
+                        <div>
+                              <span style={{ fontSize: "20px", fontWeight: "600" }}>Eventra</span>
+                              <span style={{ fontSize: "13px", color: "#666", marginLeft: "8px" }}>Admin</span>
+                        </div>
+                        <button onClick={handleLogout} style={{ padding: "8px 16px", border: "1px solid #ccc", borderRadius: "6px", cursor: "pointer", background: "white" }}>
+                              Logout
+                        </button>
+                  </div>
+
+                  {/* Pending count */}
+                  <h3 style={{ marginBottom: "16px" }}>
                         Pending Events: {events.reduce((sum, group) => sum + group.count, 0)}
-                  </h2>
-                  <hr />
+                  </h3>
+
+                  {/* Event cards */}
                   {sortedEvents.map((group) => {
                         return (
-                              <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)} style={{cursor: "pointer"}}>
-                                    <h2>{group.sampleEvent.title}</h2>
-                                    <p>
+                              <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)} style={{ border: "1px solid #e5e5e5", borderRadius: "8px", padding: "16px 20px", marginBottom: "16px", cursor: "pointer" }}>
+                                    <h3 style={{ margin: "0 0 8px 0" }}>{group.sampleEvent.title}</h3>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Date: </strong>
                                           {formatDate(group.sampleEvent.eventDate)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Time: </strong>
                                           {displayValue(group.sampleEvent.eventTime)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Location: </strong>
                                           {displayValue(group.sampleEvent.location)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Club: </strong>
                                           {displayValue(group.sampleEvent.club)}
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Extractions: </strong>
                                           {group.count} User(s)
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Extracted from: </strong>
                                           {group.users.map(user => user.email).join(", ")}
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(group.sampleEvent.registrationDeadline)}
                                     </p>
-                                    <div>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Tags:</strong>{" "}
                                           {group.sampleEvent.tags?.join(" | ") || "N/A"}
-                                    </div>
-                                    <p>
+                                    </p>
+                                    <p style={{ margin: "8px 0", color: "#444" }}>
                                           {cleanDescription(group.sampleEvent.description).slice(0, 360)}
                                           ...
                                     </p>
-                                    <p>
+                                    <p style={{ margin: "4px 0" }}>
                                           <strong>Registration Link: </strong>
-                                          { group.sampleEvent.registrationLink ? (
-                                                <a 
-                                                      href={group.sampleEvent.registrationLink} 
-                                                      target="_blank" 
+                                          {group.sampleEvent.registrationLink ? (
+                                                <a
+                                                      href={group.sampleEvent.registrationLink}
+                                                      target="_blank"
                                                       rel="noopener noreferrer"
                                                       onClick={(e) => e.stopPropagation()}
+                                                      style={{ color: "#2563eb" }}
                                                 >
                                                       {group.sampleEvent.registrationLink}
                                                 </a>
-                                          ) : "N/A" }
+                                          ) : "N/A"}
                                     </p>
-                                    <button onClick={(e) => { e.stopPropagation(); approveAll(group.eventIds) }}> Approve All {group.count} </button>
-                                    { !isDemoAdmin && 
-                                          <button onClick={(e) => { e.stopPropagation(); removeAll(group.eventIds) }}> Reject All </button>
-                                    }
-                                    <hr />
+                                    <div style={{ display: "flex", gap: "8px", marginTop: "12px" }} onClick={(e) => e.stopPropagation()}>
+                                          <button onClick={() => approveAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#16a34a", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                                Approve All {group.count}
+                                          </button>
+                                          {!isDemoAdmin &&
+                                                <button onClick={() => removeAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                                      Reject All
+                                                </button>
+                                          }
+                                    </div>
                               </div>
                         );
                   })}
-                  {
-                        selectedEvent && (
-                              <div 
-                                    onClick={() => setSelectedEvent(null)}
-                                    style={{
-                                          position: "fixed",
-                                          top: 0,
-                                          left: 0,
-                                          width: "100%",
-                                          height: "100%",
-                                          backgroundColor: "rgba(0,0,0,0.5)",
-                                          display: "flex",
-                                          justifyContent: "center",
-                                          alignItems: "center",
-                                          zIndex: 9999,
-                                    }}
+
+                  {/* Modal */}
+                  {selectedEvent && (
+                        <div
+                              onClick={() => setSelectedEvent(null)}
+                              style={{ position: "fixed", top: 0, left: 0, width: "100%", height: "100%", backgroundColor: "rgba(0,0,0,0.5)", display: "flex", justifyContent: "center", alignItems: "center", zIndex: 9999 }}
+                        >
+                              <div
+                                    onClick={(e) => e.stopPropagation()}
+                                    style={{ backgroundColor: "white", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "10px" }}
                               >
-                                    <div 
-                                          onClick={(e) => e.stopPropagation()}
-                                          style={{
-                                                backgroundColor: "white",
-                                                paddingBottom: "20px",
-                                                width: "80%",
-                                                maxWidth: "1000px",
-                                                maxHeight: "90vh",
-                                                overflowY: "auto",
-                                                borderRadius: "10px",
-                                          }}
-                                    >
-                                          <div 
-                                                style={{
-                                                      display: "flex",
-                                                      justifyContent: "space-between",
-                                                      alignItems: "center",
-                                                      position: "sticky",
-                                                      top: 0,
-                                                      backgroundColor: "white",
-                                                      padding: "5px 20px",
-                                                      borderBottom: "1px solid #ddd",
-                                                }}
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "white", padding: "12px 20px", borderBottom: "1px solid #ddd" }}>
+                                          <h3 style={{ margin: 0 }}>{selectedEvent.title}</h3>
+                                          <button
+                                                onClick={() => setSelectedEvent(null)}
+                                                style={{ border: "1px solid #e5e5e5", backgroundColor: "white", borderRadius: "6px", width: "32px", height: "32px", cursor: "pointer", fontWeight: "600" }}
                                           >
-                                                <h2>{selectedEvent.title}</h2>
-                                                <button onClick={() => setSelectedEvent(null)}>
-                                                      X
-                                                </button>
-                                          </div>
-                                          <div style={{ padding: "20px" }}>
-                                                <h3>AI Summary</h3>
-                                                <p>
-                                                      {cleanDescription(selectedEvent.description)}
-                                                </p>
-                                                <h3>Original Email</h3>
-                                                <pre>
-                                                      {cleanDescription(selectedEvent.fullEmailBody)}
-                                                </pre>
-                                                <button onClick={() => { approveEvent(selectedEvent._id); setSelectedEvent(null); }}>
+                                                X
+                                          </button>
+                                    </div>
+                                    <div style={{ padding: "20px" }}>
+                                          <h3>AI Summary</h3>
+                                          <p>{cleanDescription(selectedEvent.description)}</p>
+                                          <h3 style={{ marginTop: "16px" }}>Original Email</h3>
+                                          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "13px", color: "#444" }}>
+                                                {cleanDescription(selectedEvent.fullEmailBody)}
+                                          </pre>
+                                          <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
+                                                <button onClick={() => { approveEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#16a34a", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
                                                       Approve
                                                 </button>
-                                                { !isDemoAdmin && 
-                                                      <button onClick={() => { removeEvent(selectedEvent._id); setSelectedEvent(null); }}>
+                                                {!isDemoAdmin &&
+                                                      <button onClick={() => { removeEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
                                                             Reject
                                                       </button>
                                                 }
-                                                <hr />
                                           </div>
                                     </div>
                               </div>
-                        )
-                  }
+                        </div>
+                  )}
             </div>
       );
 };

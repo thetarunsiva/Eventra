@@ -39,7 +39,7 @@ function Login() {
       return (
             <div style={{ display:"flex", justifyContent:"center", alignItems:"center", height:"100vh", flexDirection:"column", gap: "12px" }}>
                   <h1 style={{ fontSize: "2rem", marginBottom: "4px" }}>Eventra</h1>
-                  <h3 style={{ color: "#666", fontWeight: "normal", marginBottom: "8px" }}>Never miss out on important Event updates anymore..</h3>
+                  <h3 style={{ color: "#666", fontWeight: "normal", marginBottom: "8px" }}>Never miss out on Important Event Updates anymore..</h3>
                   <button onClick= {handleLogin} style={{ padding: "10px 24px", border:"1px solid #ccc", borderRadius:"6px", cursor: "pointer", fontSize: "14px"}}> Login with Google </button>
                   <p style={{ color: "#999", margin: "4px 0", fontSize: "12px" }}>or Try a demo</p>
                   <div style={{ display: "flex", gap: "12px" }}>
