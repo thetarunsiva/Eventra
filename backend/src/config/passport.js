@@ -12,15 +12,24 @@ passport.use(
                   callbackURL: 'https://eventra-ssn-backend.onrender.com/api/auth/google/callback',
             },
             async (accessToken, refreshToken, profile, done) => {
+
                   console.log("=== PASSPORT CALLBACK ===");
                   console.log("Profile ID:", profile.id);
                   console.log("Email:", profile.emails[0].value);
+
                   try {
+                        const email = profile.emails[0].value.toLowerCase();
+                        const currEmailDomain = email.split('@')[1];
+                        const allowedDomains = ["ssn.edu.in", "snu.edu.in"];
+                        if (!allowedDomains.includes(currEmailDomain)) {
+                              return done(new Error('Unauthorized domain, Please use your college email to login (@ssn.edu.in / @snu.edu.in)'), null);
+                        }
+
                         let user = await User.findOne({ googleId: profile.id });
                         if (!user) {
                               user = await User.create({
                                     googleId: profile.id,
-                                    email: profile.emails[0].value,
+                                    email: email,
                                     name: profile.displayName,
                                     picture: profile.photos?.[0]?.value,
                                     googleRefreshToken: refreshToken,
@@ -39,10 +48,10 @@ passport.use(
                               user.googleRefreshToken = refreshToken;
                               await user.save();
                         }
-                        done(null, user);
+                        return done(null, user);
                   }
                   catch (error) {
-                        done(error, null);
+                        return done(error, null);
                   }
             }
       )
