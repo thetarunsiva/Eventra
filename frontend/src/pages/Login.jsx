@@ -63,7 +63,7 @@ function Login() {
                                     GitHub
                               </a>
                               <span style={{ color: "#ccc" }}>•</span>
-                              <a href="https://github.com/thetarunsiva/Eventra#getting-started" target="_blank" rel="noopener noreferrer" style={{ color: "#2D1B12", textDecoration: "none", fontWeight: "500", cursor: "pointer" }}>
+                              <a href="https://github.com/thetarunsiva/Eventra#Live-demo" target="_blank" rel="noopener noreferrer" style={{ color: "#2D1B12", textDecoration: "none", fontWeight: "500", cursor: "pointer" }}>
                                     Getting Started
                               </a>
                               <span style={{ color: "#ccc" }}>•</span>
