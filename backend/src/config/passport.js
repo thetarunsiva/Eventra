@@ -20,7 +20,7 @@ passport.use(
                   try {
                         const email = profile.emails[0].value.toLowerCase();
                         const currEmailDomain = email.split('@')[1];
-                        const allowedDomains = ["ssn.edu.in", "snu.edu.in"];
+                        const allowedDomains = ["ssn.edu.in", "snuchennai.edu.in"];
                         if (!allowedDomains.includes(currEmailDomain)) {
                               return done(new Error('Unauthorized domain, Please use your college email to login (@ssn.edu.in / @snu.edu.in)'), null);
                         }
