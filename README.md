@@ -56,4 +56,4 @@ Every extracted event gets a confidence score (sender trust, keyword match, extr
 
 ---
 
-*Built solo end-to-end: OAuth, extraction pipeline, confidence system, and dashboard, Currently live with 50+ active SSN users.*
+*Currently live with 50+ active SSN users.*
