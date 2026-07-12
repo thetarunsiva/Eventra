@@ -25,10 +25,7 @@ function Login() {
             try {
                   const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/demo-login`, { role });
                   localStorage.setItem("token", response.data.token);
-                  if (role === "Admin") {
-                        navigate("/admin-dashboard");
-                  }
-                  else {
+                  if (role === "User") {
                         navigate("/dashboard");
                   }
             }
@@ -47,10 +44,9 @@ function Login() {
                         <button onClick= {handleLogin} style={{ padding: "13px 30px", background: "#2D1B12", color: "white", border: "none", borderRadius: "12px", cursor: "pointer", fontSize: "15px", fontWeight: "600", marginTop: "6px", boxShadow: "0 6px 20px rgba(45, 27, 18, 0.15)" }}> 
                               Continue with Google 
                         </button>
-                        <p style={{ color: "#999", margin: "4px 0", fontSize: "12px", fontWeight: "500" }}>or Explore with a Demo</p>
+                        <p style={{ color: "#999", margin: "4px 0", fontSize: "12px", fontWeight: "500" }}>Explore with a Demo</p>
                         <div style={{ display: "flex", gap: "12px" }}>
                               <button onClick={() => handleDemoLogin("User")} style={{ padding: "11px 22px", background: "#fff8f4", border: "1px solid #e5d6cc", borderRadius: "12px", cursor: "pointer", fontSize: "14px", fontWeight: "500", color: "#2D1B12", boxShadow: "0 3px 10px rgba(0, 0, 0, 0.05)" }}> Demo User </button>
-                              <button onClick={() => handleDemoLogin("Admin")} style={{ padding: "11px 22px", background: "#fff8f4", border: "1px solid #e5d6cc", borderRadius: "12px", cursor: "pointer", fontSize: "14px", fontWeight: "500", color: "#2D1B12", boxShadow: "0 3px 10px rgba(0, 0, 0, 0.05)" }}> Demo Admin </button>
                         </div>
                   </div>
 

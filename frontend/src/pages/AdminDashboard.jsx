@@ -2,11 +2,26 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
 
+import ClosedEventOverlay from "../components/ClosedEventOverlay";
+
+const uiPalette = {
+      page: "#fff8f4",
+      surface: "#fffdfc",
+      surfaceAlt: "#fff7f0",
+      border: "#eadfd8",
+      text: "#2D1B12",
+      muted: "#5C4A40",
+      softText: "#6b5a50",
+      accent: "#2D1B12",
+      accentSoft: "#f3e6db",
+      closedBg: "#f4f4f5",
+      closedBorder: "#d4d4d8",
+};
+
 function AdminDashboard() {
       const navigate = useNavigate();
       const [events, setEvents] = useState([]);
       const [selectedEvent, setSelectedEvent] = useState(null);
-      const [isDemoAdmin, setIsDemoAdmin] = useState(null);
 
       useEffect(() => {
             const fetchPendingEvents = async () => {
@@ -19,7 +34,6 @@ function AdminDashboard() {
                               `${import.meta.env.VITE_API_URL}/auth/me`,
                               { headers: { Authorization: `Bearer ${token}` } }
                         );
-                        setIsDemoAdmin(userDeets.data.user.email === "demoadmin@eventra.com");
                         setEvents(response.data);
                   }
                   catch (error) {
@@ -158,6 +172,11 @@ function AdminDashboard() {
                   .trim();
       }
 
+      const isClosedEvent = (date) => {
+            if (!date) return false;
+            return new Date(date) < new Date();
+      };
+
       const sortedEvents = [...events].sort((a, b) => {
             const dateA = a.sampleEvent.registrationDeadline || a.sampleEvent.eventDate || null;
             const dateB = b.sampleEvent.registrationDeadline || b.sampleEvent.eventDate || null;
@@ -168,15 +187,16 @@ function AdminDashboard() {
       });
 
       return (
-            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px" }}>
+            <div style={{ maxWidth: "1200px", margin: "0 auto", padding: "0 24px 40px", background: "linear-gradient(180deg, #fff8f4 0%, #fffdfc 28%, #fffaf7 100%)", minHeight: "100vh" }}>
                   {/* Navbar */}
-                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: "1px solid #eadfd8", marginBottom: "28px" }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", padding: "20px 0", borderBottom: `1px solid ${uiPalette.border}`, marginBottom: "28px" }}>
                         <div>
                               <span
                                     style={{
                                           fontSize: "28px",
                                           fontWeight: "700",
-                                          letterSpacing: "-0.5px"
+                                          letterSpacing: "-0.5px",
+                                          color: uiPalette.text
                                     }}
                               >
                                     Eventra
@@ -184,8 +204,8 @@ function AdminDashboard() {
                               <span
                                     style={{
                                           fontSize: "12px",
-                                          color: "#92400e",
-                                          background: "#fef3c7",
+                                          color: uiPalette.text,
+                                          background: uiPalette.accentSoft,
                                           padding: "4px 10px",
                                           borderRadius: "999px",
                                           marginLeft: "10px",
@@ -195,68 +215,75 @@ function AdminDashboard() {
                                     Admin
                               </span>
                         </div>
-                        <button onClick={handleLogout} style={{ padding: "10px 18px", border: "1px solid #eadfd8", borderRadius: "12px", cursor: "pointer", background: "#fffdfc", color: "#2D1B12", fontWeight: "500" }}>
+                        <button onClick={handleLogout} style={{ padding: "10px 18px", border: `1px solid ${uiPalette.border}`, borderRadius: "12px", cursor: "pointer", background: uiPalette.surface, color: uiPalette.text, fontWeight: "600", boxShadow: "0 4px 12px rgba(45, 27, 18, 0.06)" }}>
                               Logout
                         </button>
                   </div>
 
                   {/* Pending count */}
-                  <h3 style={{ marginBottom: "16px" }}>
+                  <h3 style={{ marginBottom: "16px", color: uiPalette.text }}>
                         Pending Events: {events.reduce((sum, group) => sum + group.count, 0)}
                   </h3>
 
                   {/* Event cards */}
                   {sortedEvents.map((group) => {
+                        const isPastEvent = isClosedEvent(group.sampleEvent.eventDate);
                         return (
                               <div key={JSON.stringify(group.sampleEvent)} onClick={() => setSelectedEvent(group.sampleEvent)}
                               style={{
-                                    background: "#fffdfc",
-                                    border: "1px solid #eadfd8",
+                                    position: "relative",
+                                    overflow: "hidden",
+                                    background: isPastEvent ? uiPalette.closedBg : uiPalette.surface,
+                                    color: isPastEvent ? "#52525b" : uiPalette.text,
+                                    border: isPastEvent ? `1px solid ${uiPalette.closedBorder}` : `1px solid ${uiPalette.border}`,
                                     borderRadius: "16px",
                                     padding: "24px",
                                     minHeight: "240px",
                                     marginBottom: "20px",
                                     cursor: "pointer",
-                                    boxShadow: "0 4px 12px rgba(0,0,0,0.04)"
+                                    boxShadow: isPastEvent ? "0 2px 8px rgba(0,0,0,0.03)" : "0 10px 24px rgba(45, 27, 18, 0.06)",
+                                    filter: isPastEvent ? "grayscale(100%)" : "none",
+                                    opacity: isPastEvent ? 0.78 : 1
                               }}>
-                                    <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700"}}>{group.sampleEvent.title}</h3>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    {isPastEvent && <ClosedEventOverlay />}
+                                    <h3 style={{ margin: "0 0 12px 0", fontSize: "22px", fontWeight: "700", color: isPastEvent ? "#3f3f46" : uiPalette.text}}>{group.sampleEvent.title}</h3>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Date: </strong>
                                           {formatDate(group.sampleEvent.eventDate)}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Time: </strong>
                                           {displayValue(group.sampleEvent.eventTime)}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Location: </strong>
                                           {displayValue(group.sampleEvent.location)}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Club: </strong>
                                           {displayValue(group.sampleEvent.club)}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Extractions: </strong>
                                           {group.count} User(s)
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Extracted from: </strong>
                                           {group.users.map(user => user.email).join(", ")}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Registration Deadline: </strong>
                                           {formatDate(group.sampleEvent.registrationDeadline)}
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Tags:</strong>{" "}
                                           {group.sampleEvent.tags?.join(" | ") || "N/A"}
                                     </p>
-                                    <p style={{ margin: "8px 0", color: "#444" }}>
+                                    <p style={{ margin: "8px 0", color: isPastEvent ? "#52525b" : uiPalette.muted, fontStyle: "italic" }}>
                                           {cleanDescription(group.sampleEvent.description).slice(0, 360)}
                                           ...
                                     </p>
-                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6" }}>
+                                    <p style={{ margin: "6px 0", fontSize: "15px", lineHeight: "1.6", color: isPastEvent ? "#52525b" : uiPalette.softText }}>
                                           <strong>Registration Link: </strong>
                                           {group.sampleEvent.registrationLink ? (
                                                 <a
@@ -264,18 +291,18 @@ function AdminDashboard() {
                                                       target="_blank"
                                                       rel="noopener noreferrer"
                                                       onClick={(e) => e.stopPropagation()}
-                                                      style={{ color: "#2563eb" }}
+                                                      style={{ color: "#7c2d12" }}
                                                 >
                                                       {group.sampleEvent.registrationLink}
                                                 </a>
                                           ) : "N/A"}
                                     </p>
                                     <div style={{ display: "flex", gap: "8px", marginTop: "12px" }} onClick={(e) => e.stopPropagation()}>
-                                          <button onClick={() => approveAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#16a34a", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                          <button onClick={() => approveAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#166534", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", boxShadow: "0 6px 16px rgba(22, 101, 52, 0.16)" }}>
                                                 Approve All {group.count}
                                           </button>
-                                          {!isDemoAdmin &&
-                                                <button onClick={() => removeAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                          {
+                                                <button onClick={() => removeAll(group.eventIds)} style={{ padding: "8px 16px", backgroundColor: "#991b1b", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", boxShadow: "0 6px 16px rgba(153, 27, 27, 0.16)" }}>
                                                       Reject All
                                                 </button>
                                           }
@@ -292,13 +319,13 @@ function AdminDashboard() {
                         >
                               <div
                                     onClick={(e) => e.stopPropagation()}
-                                    style={{ backgroundColor: "#fffdfc", paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "20px" }}
+                                    style={{ backgroundColor: uiPalette.surface, paddingBottom: "20px", width: "80%", maxWidth: "1000px", maxHeight: "90vh", overflowY: "auto", borderRadius: "20px", boxShadow: "0 24px 60px rgba(45, 27, 18, 0.18)", border: `1px solid ${uiPalette.border}` }}
                               >
-                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: "white", padding: "12px 20px", borderBottom: "1px solid #ddd" }}>
+                                    <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", position: "sticky", top: 0, backgroundColor: uiPalette.surface, padding: "12px 20px", borderBottom: `1px solid ${uiPalette.border}` }}>
                                           <h3 style={{ margin: 0 }}>{selectedEvent.title}</h3>
                                           <button
                                                 onClick={() => setSelectedEvent(null)}
-                                                style={{ border: "1px solid #e5e5e5", backgroundColor: "white", borderRadius: "6px", width: "32px", height: "32px", cursor: "pointer", fontWeight: "600" }}
+                                                style={{ border: `1px solid ${uiPalette.border}`, backgroundColor: uiPalette.surface, borderRadius: "6px", width: "32px", height: "32px", cursor: "pointer", fontWeight: "600" }}
                                           >
                                                 X
                                           </button>
@@ -307,15 +334,15 @@ function AdminDashboard() {
                                           <h3>AI Summary</h3>
                                           <p>{cleanDescription(selectedEvent.description)}</p>
                                           <h3 style={{ marginTop: "16px" }}>Original Email</h3>
-                                          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "13px", color: "#444" }}>
+                                          <pre style={{ whiteSpace: "pre-wrap", wordBreak: "break-word", fontSize: "13px", color: uiPalette.muted }}>
                                                 {cleanDescription(selectedEvent.fullEmailBody)}
                                           </pre>
                                           <div style={{ display: "flex", gap: "8px", marginTop: "16px" }}>
-                                                <button onClick={() => { approveEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#16a34a", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                                <button onClick={() => { approveEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#166534", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", boxShadow: "0 6px 16px rgba(22, 101, 52, 0.16)" }}>
                                                       Approve
                                                 </button>
-                                                {!isDemoAdmin &&
-                                                      <button onClick={() => { removeEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#dc2626", color: "white", border: "none", borderRadius: "6px", cursor: "pointer" }}>
+                                                {
+                                                      <button onClick={() => { removeEvent(selectedEvent._id); setSelectedEvent(null); }} style={{ padding: "8px 16px", backgroundColor: "#991b1b", color: "white", border: "none", borderRadius: "8px", cursor: "pointer", boxShadow: "0 6px 16px rgba(153, 27, 27, 0.16)" }}>
                                                             Reject
                                                       </button>
                                                 }
