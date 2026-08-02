@@ -2,7 +2,6 @@ require("dotenv").config();
 
 const app = require("./app");
 const connectDB = require("./config/db");
-const { startEmailCron } = require("./cron/emailCron");
 const { processEmails } = require("./services/emailProcessorService");
 const port = process.env.PORT || 5000;
 
@@ -24,7 +23,6 @@ io.on("connection", (socket) => {
 });
 
 connectDB();
-startEmailCron();
 processEmails();
 
 server.listen(port, () => {
